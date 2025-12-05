@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                             http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+    <display-name>Harassment Consultation App</display-name>
+
+    <!-- 相談フォーム表示サーブレット -->
+    <servlet>
+        <servlet-name>ConsultFormServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.ConsultFormServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ConsultFormServlet</servlet-name>
+        <!-- 相談フォームのURL -->
+        <url-pattern>/consult/new</url-pattern>
+    </servlet-mapping>
+
+    <!-- 相談送信サーブレット -->
+    <servlet>
+        <servlet-name>ConsultSubmitServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.ConsultSubmitServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ConsultSubmitServlet</servlet-name>
+        <!-- フォームの action で叩くURL -->
+        <url-pattern>/consult/submit</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+
