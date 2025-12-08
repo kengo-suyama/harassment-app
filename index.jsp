@@ -31,9 +31,10 @@
                     </p>
 
                     <div class="d-grid gap-3 mt-4">
-                        <a href="<%= request.getContextPath() %>/consult/new" class="btn btn-primary">
+                        <a href="<%= request.getContextPath() %>/consult/consult_form.jsp" class="btn btn-primary">
                             相談を送信する（相談者用）
                         </a>
+                        
                         
 
                         <a href="admin_login.jsp" class="btn btn-outline-secondary">

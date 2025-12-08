@@ -1,0 +1,82 @@
+package com.example.harassment.servlet;
+
+import com.example.harassment.auth.AuthService;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.*;
+import java.io.IOException;
+
+public class PasswordChangeServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
+
+        String role = (String) session.getAttribute("loginRole");
+        if (role == null) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
+
+        request.setAttribute("role", role);
+        request.getRequestDispatcher("/password_change.jsp")
+               .forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8");
+
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
+
+        String role = (String) session.getAttribute("loginRole");
+        if (role == null) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
+        }
+
+        String currentPassword = request.getParameter("currentPassword");
+        String newPassword     = request.getParameter("newPassword");
+        String confirmPassword = request.getParameter("confirmPassword");
+
+        if (newPassword == null || !newPassword.equals(confirmPassword)) {
+            request.setAttribute("role", role);
+            request.setAttribute("error", "新しいパスワードと確認用パスワードが一致しません。");
+            request.getRequestDispatcher("/password_change.jsp")
+                   .forward(request, response);
+            return;
+        }
+
+        boolean changed = false;
+        if ("ADMIN".equals(role)) {
+            changed = AuthService.changeAdminPassword(currentPassword, newPassword);
+        } else if ("MASTER".equals(role)) {
+            changed = AuthService.changeMasterPassword(currentPassword, newPassword);
+        }
+
+        if (!changed) {
+            request.setAttribute("role", role);
+            request.setAttribute("error", "現在のパスワードが正しくありません。");
+            request.getRequestDispatcher("/password_change.jsp")
+                   .forward(request, response);
+            return;
+        }
+
+        request.setAttribute("role", role);
+        request.setAttribute("message", "パスワードを変更しました。次回ログインから新しいパスワードが有効になります。");
+        request.getRequestDispatcher("/password_change.jsp")
+               .forward(request, response);
+    }
+}

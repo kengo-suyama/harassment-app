@@ -7,7 +7,7 @@
 
     <display-name>Harassment Consultation App</display-name>
 
-    <!-- 相談フォーム表示サーブレット -->
+    <!-- 相談フォーム表示サーブレット（※今後使わないならコメントアウトでもOK） -->
     <servlet>
         <servlet-name>ConsultFormServlet</servlet-name>
         <servlet-class>com.example.harassment.servlet.ConsultFormServlet</servlet-class>
@@ -27,9 +27,66 @@
 
     <servlet-mapping>
         <servlet-name>ConsultSubmitServlet</servlet-name>
-        <!-- フォームの action で叩くURL -->
+        <!-- consult_form.jsp の form action から呼ばれるURL -->
         <url-pattern>/consult/submit</url-pattern>
     </servlet-mapping>
 
-</web-app>
+    <!-- 管理者用 相談一覧サーブレット -->
+    <servlet>
+        <servlet-name>AdminConsultListServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminConsultListServlet</servlet-class>
+    </servlet>
 
+    <servlet-mapping>
+        <servlet-name>AdminConsultListServlet</servlet-name>
+        <!-- ★ このURLでアクセス： /harassment-app/admin/consult/list -->
+        <url-pattern>/admin/consult/list</url-pattern>
+    </servlet-mapping>
+
+    <!-- 管理者用 相談詳細サーブレット -->
+    <servlet>
+        <servlet-name>AdminConsultDetailServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminConsultDetailServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AdminConsultDetailServlet</servlet-name>
+        <url-pattern>/admin/consult/detail</url-pattern>
+    </servlet-mapping>
+
+    <!-- 管理者ログイン -->
+    <servlet>
+        <servlet-name>AdminLoginServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminLoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminLoginServlet</servlet-name>
+        <url-pattern>/admin/login</url-pattern>
+    </servlet-mapping>
+
+    <!-- マスターログイン -->
+    <servlet>
+        <servlet-name>MasterLoginServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.MasterLoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MasterLoginServlet</servlet-name>
+        <url-pattern>/master/login</url-pattern>
+    </servlet-mapping>
+
+    <!-- パスワード変更 -->
+    <servlet>
+        <servlet-name>PasswordChangeServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.PasswordChangeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PasswordChangeServlet</servlet-name>
+        <url-pattern>/password/change</url-pattern>
+    </servlet-mapping>
+
+    <!-- 最初に表示する JSP を index.jsp にする -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+</web-app>

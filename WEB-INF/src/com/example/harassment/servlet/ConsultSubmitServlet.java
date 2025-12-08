@@ -1,51 +1,85 @@
 package com.example.harassment.servlet;
 
 import com.example.harassment.model.Consultation;
-import com.example.harassment.repository.ConsultationRepository;
+import com.example.harassment.repository.MemoryConsultationRepository;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
 
-/**
- * 相談フォームの送信を受け取り、相談を登録するサーブレット。
- * POST /consult/submit で呼び出される想定。
- */
 public class ConsultSubmitServlet extends HttpServlet {
 
-    // 簡易的に new して使う（static リストなのでインスタンスは共有）
-    private final ConsultationRepository repo = new ConsultationRepository();
+    // メモリリポジトリ（全リクエストで共有）
+    private static final MemoryConsultationRepository repository =
+            new MemoryConsultationRepository();
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 文字化け防止
-        req.setCharacterEncoding("UTF-8");
+        request.setCharacterEncoding("UTF-8");
 
-        // フォームから値を取得
-        String sheetDate       = req.getParameter("sheetDate");
-        String consultantName  = req.getParameter("consultantName");
-        String summary         = req.getParameter("summary");
-        String sharePermission = req.getParameter("sharePermission");
+        // ===== 1. フォームの値を取得 =====
 
-        // モデルに詰める
+        String sheetDate = request.getParameter("sheetDate");
+        String consultantName = request.getParameter("consultantName");
+        String summary = request.getParameter("summary");
+
+        String reportedExists = request.getParameter("reportedExists");
+        String reportedPerson = request.getParameter("reportedPerson");
+        String reportedAt = request.getParameter("reportedAt");
+        String followUp = request.getParameter("followUp");
+
+        String mentalScaleParam = request.getParameter("mentalScale");
+        Integer mentalScale = null;
+        if (mentalScaleParam != null && !mentalScaleParam.isBlank()) {
+            try {
+                mentalScale = Integer.parseInt(mentalScaleParam);
+            } catch (NumberFormatException e) {
+                mentalScale = null;
+            }
+        }
+        String mentalDetail = request.getParameter("mentalDetail");
+
+        String[] futureRequestValues = request.getParameterValues("futureRequest");
+        String futureRequest = null;
+        if (futureRequestValues != null && futureRequestValues.length > 0) {
+            futureRequest = String.join(",", futureRequestValues);
+        }
+
+        String futureRequestOtherDetail = request.getParameter("futureRequestOtherDetail");
+
+        String sharePermission = request.getParameter("sharePermission");
+        String shareLimitedTargets = request.getParameter("shareLimitedTargets");
+
+        // ===== 2. モデルに詰める =====
         Consultation c = new Consultation();
         c.setSheetDate(sheetDate);
         c.setConsultantName(consultantName);
         c.setSummary(summary);
+
+        c.setReportedExists(reportedExists);
+        c.setReportedPerson(reportedPerson);
+        c.setReportedAt(reportedAt);
+        c.setFollowUp(followUp);
+
+        c.setMentalScale(mentalScale);
+        c.setMentalDetail(mentalDetail);
+
+        c.setFutureRequest(futureRequest);
+        c.setFutureRequestOtherDetail(futureRequestOtherDetail);
+
         c.setSharePermission(sharePermission);
+        c.setShareLimitedTargets(shareLimitedTargets);
 
-        // 保存（受付番号が採番される）
-        repo.save(c);
+        // ===== 3. メモリ上に保存 =====
+        repository.save(c);
 
-        // 完了画面に渡す値（受付番号など）
-        req.setAttribute("savedId", c.getId());
+       // ===== 4. 完了画面へフォワード =====
+request.setAttribute("consultation", c);
+request.getRequestDispatcher("/consult/consult_thanks.jsp")
+       .forward(request, response);
 
-        // 完了JSPへフォワード
-        req.getRequestDispatcher("/consult_thanks.jsp").forward(req, resp);
+ 
     }
 }
-
-    
-
