@@ -1,7 +1,5 @@
 package com.example.harassment.servlet;
 
-import com.example.harassment.auth.AuthService;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
@@ -9,7 +7,8 @@ import java.io.IOException;
 public class MasterLoginServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
             throws ServletException, IOException {
 
         request.getRequestDispatcher("/master_login.jsp")
@@ -17,24 +16,28 @@ public class MasterLoginServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        if (AuthService.checkMasterLogin(username, password)) {
-            HttpSession session = request.getSession(true);
-            session.setAttribute("loginRole", "MASTER");
+        // 仮の認証ロジック
+        if ("master".equals(username) && "master1234".equals(password)) {
 
-            // マスター用のトップ（とりあえず同じ一覧へ飛ばしてもOK）
-            response.sendRedirect(request.getContextPath() + "/admin/consult/list");
-        } else {
-            request.setAttribute("loginError", "ユーザー名またはパスワードが違います。");
-            request.getRequestDispatcher("/master_login.jsp")
-                   .forward(request, response);
+            HttpSession httpSession = request.getSession(true);
+            httpSession.setAttribute("loginRole", "MASTER");
+
+            // ★ ログイン成功後はマスター用一覧サーブレットにリダイレクト
+            response.sendRedirect(request.getContextPath() + "/master/consult/list");
+            return;
         }
+
+        // 認証失敗時
+        request.setAttribute("loginError", "ユーザー名またはパスワードが違います。");
+        request.getRequestDispatcher("/master_login.jsp")
+               .forward(request, response);
     }
 }

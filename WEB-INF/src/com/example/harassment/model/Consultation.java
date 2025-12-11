@@ -2,37 +2,45 @@ package com.example.harassment.model;
 
 public class Consultation {
 
-    private long id;                    // メモリ内で採番するID
+    // 連番ID
+    private int id;
 
-    private String sheetDate;           // シート記入日 (yyyy-MM-dd 文字列)
-    private String consultantName;      // 相談者氏名
-    private String summary;             // 相談の概要
+    // ====== 相談シートの主な項目 ======
+    private String sheetDate;                // シート記入日（文字列でOK）
+    private String consultantName;           // 相談者氏名（任意）
+    private String summary;                  // 相談の概要
 
     // 発生後の状況
-    private String reportedExists;      // YES / NO
-    private String reportedPerson;      // 相談相手
-    private String reportedAt;          // 相談日時 (文字列のまま)
-    private String followUp;            // その後の対応
+    private String reportedExists;           // 「いる」「いない」
+    private String reportedPerson;           // 相談相手
+    private String reportedAt;               // 相談日時
+    private String followUp;                 // その後の対応
 
     // 心身の状態
-    private Integer mentalScale;        // 1〜10
-    private String mentalDetail;        // 心身の状態の詳細
+    private int mentalScale;                 // 1〜10
+    private String mentalDetail;             // 心身の状態の詳細
 
     // 今後の希望
-    private String futureRequest;       // カンマ区切りで保存 (例: "TALK_ONLY,WATCH")
+    // チェックボックス複数選択をカンマ区切りで保存しておく
+    private String futureRequest;
     private String futureRequestOtherDetail;
 
-    // 共有可否
-    private String sharePermission;     // ALL_OK / LIMITED / NO_SHARE
+    // 共有の可否
+    private String sharePermission;          // ALL_OK / LIMITED / NO_SHARE
     private String shareLimitedTargets;
 
-    // ===== Getter / Setter =====
+    // 管理者対応欄
+    private String followUpDraft;            // 管理者の対応案（下書き）
+    private String followUpAction;           // 確定した対応内容
+    private boolean adminChecked;            // 管理者確認フラグ
 
-    public long getId() {
+    // ====== getter / setter ======
+
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -92,11 +100,11 @@ public class Consultation {
         this.followUp = followUp;
     }
 
-    public Integer getMentalScale() {
+    public int getMentalScale() {
         return mentalScale;
     }
 
-    public void setMentalScale(Integer mentalScale) {
+    public void setMentalScale(int mentalScale) {
         this.mentalScale = mentalScale;
     }
 
@@ -138,5 +146,29 @@ public class Consultation {
 
     public void setShareLimitedTargets(String shareLimitedTargets) {
         this.shareLimitedTargets = shareLimitedTargets;
+    }
+
+    public String getFollowUpDraft() {
+        return followUpDraft;
+    }
+
+    public void setFollowUpDraft(String followUpDraft) {
+        this.followUpDraft = followUpDraft;
+    }
+
+    public String getFollowUpAction() {
+        return followUpAction;
+    }
+
+    public void setFollowUpAction(String followUpAction) {
+        this.followUpAction = followUpAction;
+    }
+
+    public boolean isAdminChecked() {
+        return adminChecked;
+    }
+
+    public void setAdminChecked(boolean adminChecked) {
+        this.adminChecked = adminChecked;
     }
 }

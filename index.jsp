@@ -31,17 +31,19 @@
                     </p>
 
                     <div class="d-grid gap-3 mt-4">
+
+                        <!-- ★相談フォーム：サーブレット /consult/new を呼び出す -->
                         <a href="<%= request.getContextPath() %>/consult/consult_form.jsp" class="btn btn-primary">
                             相談を送信する（相談者用）
                         </a>
-                        
-                        
 
-                        <a href="admin_login.jsp" class="btn btn-outline-secondary">
+                        <!-- ★管理者ログイン -->
+                        <a href="<%= request.getContextPath() %>/admin_login.jsp" class="btn btn-outline-secondary">
                             管理者ログイン
                         </a>
 
-                        <a href="master_login.jsp" class="btn btn-outline-dark">
+                        <!-- ★マスターログイン -->
+                        <a href="<%= request.getContextPath() %>/master_login.jsp" class="btn btn-outline-dark">
                             マスターログイン（外部機関連携担当）
                         </a>
                     </div>

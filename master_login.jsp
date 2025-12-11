@@ -19,7 +19,9 @@
 
                     <h1 class="h5 mb-3">マスターログイン</h1>
 
-                    <% String error = (String) request.getAttribute("loginError"); %>
+                    <% 
+                        String error = (String) request.getAttribute("loginError"); 
+                    %>
                     <% if (error != null) { %>
                         <div class="alert alert-danger"><%= error %></div>
                     <% } %>

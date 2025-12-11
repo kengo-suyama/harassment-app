@@ -1,17 +1,20 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.example.harassment.model.Consultation" %>
 <%@ page import="javax.servlet.http.HttpSession" %>
+
 <%
+    // ===== 相談データと権限の取得 =====
     Consultation c = (Consultation) request.getAttribute("consultation");
 
-    HttpSession session = request.getSession(false);
+    HttpSession httpSession = request.getSession(false);
     String role = null;
-    if (session != null) {
-        role = (String) session.getAttribute("loginRole");
+    if (httpSession != null) {
+        role = (String) httpSession.getAttribute("loginRole");
     }
     boolean isAdmin  = "ADMIN".equals(role);
     boolean isMaster = "MASTER".equals(role);
 %>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -42,14 +45,20 @@
 
 <div class="container mb-5">
 
+    <%-- =========================
+         1. 権限 & データ存在チェック
+       ========================== --%>
     <% if (!isAdmin && !isMaster) { %>
+
         <div class="alert alert-danger">
             この画面はログインした管理者・マスターのみが閲覧できます。
         </div>
         <a href="<%= request.getContextPath() %>/" class="btn btn-outline-secondary">
             トップへ戻る
         </a>
+
     <% } else if (c == null) { %>
+
         <div class="alert alert-danger">
             該当する相談データが見つかりませんでした。
         </div>
@@ -57,159 +66,213 @@
            class="btn btn-outline-secondary">
             一覧に戻る
         </a>
+
     <% } else { %>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h1 class="h4 mb-0">
-                相談詳細（ID：<%= c.getId() %>）
-            </h1>
-            <% if (isAdmin) { %>
-                <div class="text-muted small">
-                    社内での状況整理・対応検討のために利用してください。
-                </div>
-            <% } else if (isMaster) { %>
-                <div class="text-muted small">
-                    外部機関への相談が必要かどうかの判断材料として利用してください。
-                </div>
-            <% } %>
+        <%-- =========================
+             2. ヘッダー（タイトル＋説明）
+           ========================== --%>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h1 class="h4 mb-0">
+                    相談詳細（ID：<%= c.getId() %>）
+                </h1>
+                <% if (isAdmin) { %>
+                    <div class="text-muted small">
+                        社内での状況整理・対応検討のために利用してください。
+                    </div>
+                <% } else if (isMaster) { %>
+                    <div class="text-muted small">
+                        外部機関への相談が必要かどうかの判断材料として利用してください。
+                    </div>
+                <% } %>
+            </div>
+            <div class="text-end">
+                <a href="<%= request.getContextPath() %>/admin/consult/list"
+                   class="btn btn-sm btn-outline-secondary">
+                    一覧に戻る
+                </a>
+                <a href="<%= request.getContextPath() %>/password/change"
+                   class="btn btn-sm btn-outline-secondary">
+                    パスワード変更
+                </a>
+            </div>
         </div>
-        <div class="text-end">
+        <!-- 管理者の対応内容 -->
+<div class="card mt-4">
+    <div class="card-body">
+        <h2 class="h5 mb-3">管理者の対応</h2>
+        <p class="text-muted small">
+            面談や電話、文書での案内など、相談者に行った対応を記録します。
+        </p>
+
+        <% if (c.getFollowUpAction() != null && !c.getFollowUpAction().isEmpty()) { %>
+            <pre class="bg-light p-3 border rounded"><%= c.getFollowUpAction() %></pre>
+        <% } else { %>
+            <p class="text-muted">まだ対応内容は登録されていません。</p>
+        <% } %>
+
+        <a href="<%= request.getContextPath() %>/admin/consult/followup/edit?id=<%= c.getId() %>"
+           class="btn btn-success mt-3">
+            対応内容を登録・更新する
+        </a>
+    </div>
+</div>
+
+        <%-- =========================
+             3. 基本情報カード
+           ========================== --%>
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <strong>基本情報</strong>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">シート記入日</dt>
+                    <dd class="col-sm-9"><%= c.getSheetDate() != null ? c.getSheetDate() : "" %></dd>
+
+                    <dt class="col-sm-3">相談者氏名</dt>
+                    <dd class="col-sm-9">
+                        <%
+                            String name = c.getConsultantName();
+                            if (name == null || name.isBlank()) {
+                        %>
+                            <span class="text-muted">（匿名）</span>
+                        <% } else { %>
+                            <%= name %>
+                        <% } %>
+                    </dd>
+
+                    <dt class="col-sm-3">概要</dt>
+                    <dd class="col-sm-9">
+                        <pre class="mb-0"><%= c.getSummary() != null ? c.getSummary() : "" %></pre>
+                    </dd>
+
+                    <dt class="col-sm-3">共有可否</dt>
+                    <dd class="col-sm-9">
+                        <%= c.getSharePermission() != null ? c.getSharePermission() : "" %>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <%-- =========================
+             4. 発生状況カード（PDF 2枚目項目イメージ）
+           ========================== --%>
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <strong>発生状況</strong>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">発生日・期間</dt>
+                    <dd class="col-sm-9">
+                        <%= c.getIncidentDate() != null ? c.getIncidentDate() : "" %>
+                    </dd>
+
+                    <dt class="col-sm-3">発生場所</dt>
+                    <dd class="col-sm-9">
+                        <%= c.getIncidentPlace() != null ? c.getIncidentPlace() : "" %>
+                    </dd>
+
+                    <dt class="col-sm-3">加害者（立場など）</dt>
+                    <dd class="col-sm-9">
+                        <%= c.getHarasserInfo() != null ? c.getHarasserInfo() : "" %>
+                    </dd>
+
+                    <dt class="col-sm-3">被害者（立場など）</dt>
+                    <dd class="col-sm-9">
+                        <%= c.getVictimInfo() != null ? c.getVictimInfo() : "" %>
+                    </dd>
+
+                    <dt class="col-sm-3">具体的な行為の内容</dt>
+                    <dd class="col-sm-9">
+                        <pre class="mb-0"><%= c.getIncidentDetail() != null ? c.getIncidentDetail() : "" %></pre>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <%-- =========================
+             5. その後の状況・心身の状態（例）
+           ========================== --%>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light">
+                        <strong>その後の状況</strong>
+                    </div>
+                    <div class="card-body">
+                        <pre class="mb-0">
+<%= c.getAfterIncidentStatus() != null ? c.getAfterIncidentStatus() : "" %>
+                        </pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light">
+                        <strong>心身の状態</strong>
+                    </div>
+                    <div class="card-body">
+                        <pre class="mb-0">
+<%= c.getMentalPhysicalState() != null ? c.getMentalPhysicalState() : "" %>
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%-- =========================
+             6. 希望・要望（例）
+           ========================== --%>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-light">
+                <strong>相談者の希望・要望</strong>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">職場環境の配慮</dt>
+                    <dd class="col-sm-9">
+                        <pre class="mb-0">
+<%= c.getWorkplaceRequest() != null ? c.getWorkplaceRequest() : "" %>
+                        </pre>
+                    </dd>
+
+                    <dt class="col-sm-3">相談窓口への要望</dt>
+                    <dd class="col-sm-9">
+                        <pre class="mb-0">
+<%= c.getSupportRequest() != null ? c.getSupportRequest() : "" %>
+                        </pre>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <%-- =========================
+             7. フッターボタン
+           ========================== --%>
+        <div class="d-flex justify-content-between mb-5">
             <a href="<%= request.getContextPath() %>/admin/consult/list"
-               class="btn btn-sm btn-outline-secondary">
+               class="btn btn-outline-secondary">
                 一覧に戻る
             </a>
-            <a href="<%= request.getContextPath() %>/password/change"
-               class="btn btn-sm btn-outline-secondary">
-                パスワード変更
-            </a>
+
+            <% if (isMaster) { %>
+                <button type="button"
+                        class="btn btn-warning"
+                        disabled
+                        title="外部機関への報告書出力（実装予定）">
+                    外部機関提出用としてマーク（準備中）
+                </button>
+            <% } %>
         </div>
-    </div>
 
-    <%-- 以下、既に作成済みの「基本情報」「発生後の状況」「心身の状態」などのカードはそのまま --%>
-    <%-- ……ここに前回お渡しした card のブロックが続くイメージ…… --%>
-
-    <% } %> <%-- /ログイン・データ存在チェック --%>
+    <% } %> <%-- /権限＆データチェックの else --%>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-
-    <!-- 基本情報 -->
-    <div class="card mb-3 shadow-sm">
-        <div class="card-header fw-bold">
-            基本情報
-        </div>
-        <div class="card-body">
-            <p><strong>シート記入日：</strong> <%= c.getSheetDate() %></p>
-            <p><strong>相談者氏名：</strong>
-                <%= (c.getConsultantName() != null && !c.getConsultantName().isBlank())
-                    ? c.getConsultantName()
-                    : "（匿名）" %>
-            </p>
-            <p><strong>相談の概要：</strong></p>
-            <pre class="bg-light p-2 border rounded"><%= c.getSummary() %></pre>
-        </div>
-    </div>
-
-    <!-- 発生後の状況 -->
-    <div class="card mb-3 shadow-sm">
-        <div class="card-header fw-bold">
-            発生後の状況
-        </div>
-        <div class="card-body">
-            <p><strong>他者への相談・報告の有無：</strong>
-                <%= c.getReportedExists() != null ? c.getReportedExists() : "" %>
-            </p>
-            <p><strong>相談相手：</strong> <%= c.getReportedPerson() %></p>
-            <p><strong>相談日時：</strong> <%= c.getReportedAt() %></p>
-            <p><strong>その後の対応：</strong></p>
-            <pre class="bg-light p-2 border rounded"><%= c.getFollowUp() %></pre>
-        </div>
-    </div>
-
-    <!-- 心身の状態 -->
-    <div class="card mb-3 shadow-sm">
-        <div class="card-header fw-bold">
-            心身の状態
-        </div>
-        <div class="card-body">
-            <p>
-                <strong>ストレスの自己評価：</strong>
-                <% if (c.getMentalScale() != null) { %>
-                    <span class="badge bg-danger fs-6"><%= c.getMentalScale() %> / 10</span>
-                <% } else { %>
-                    （未入力）
-                <% } %>
-            </p>
-            <p><strong>心身の状態・不安など：</strong></p>
-            <pre class="bg-light p-2 border rounded"><%= c.getMentalDetail() %></pre>
-        </div>
-    </div>
-
-    <!-- 今後の希望 -->
-    <div class="card mb-3 shadow-sm">
-        <div class="card-header fw-bold">
-            今後の対応に関する希望
-        </div>
-        <div class="card-body">
-            <p><strong>希望項目：</strong></p>
-            <%
-                String futureRequest = c.getFutureRequest();
-                if (futureRequest != null && !futureRequest.isBlank()) {
-                    String[] reqs = futureRequest.split(",");
-            %>
-                <ul>
-                    <% for (String r : reqs) { %>
-                        <li><%= r %></li>
-                    <% } %>
-                </ul>
-            <%
-                } else {
-            %>
-                <p class="text-muted">（特に選択なし）</p>
-            <%
-                }
-            %>
-
-            <p><strong>その他の希望：</strong></p>
-            <pre class="bg-light p-2 border rounded"><%= c.getFutureRequestOtherDetail() %></pre>
-        </div>
-    </div>
-
-    <!-- 相談内容の共有可否 -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header fw-bold">
-            相談内容の共有可否
-        </div>
-        <div class="card-body">
-            <p><strong>共有可否：</strong>
-                <%= c.getSharePermission() != null ? c.getSharePermission() : "" %>
-            </p>
-            <p><strong>共有対象（限定共有の場合）：</strong></p>
-            <pre class="bg-light p-2 border rounded"><%= c.getShareLimitedTargets() %></pre>
-        </div>
-    </div>
-
-    <% } %>
-
-    <div class="d-flex justify-content-between mb-5">
-        <a href="<%= request.getContextPath() %>/admin/consult/list"
-           class="btn btn-outline-secondary">
-            一覧に戻る
-        </a>
-        <a href="<%= request.getContextPath() %>/consult/consult_form.jsp"
-           class="btn btn-primary">
-            新規相談を入力する
-        </a>
-    </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-

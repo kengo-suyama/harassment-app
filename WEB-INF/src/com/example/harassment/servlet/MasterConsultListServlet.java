@@ -8,7 +8,7 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-public class AdminConsultListServlet extends HttpServlet {
+public class MasterConsultListServlet extends HttpServlet {
 
     private static final MemoryConsultationRepository repository =
             new MemoryConsultationRepository();
@@ -18,18 +18,16 @@ public class AdminConsultListServlet extends HttpServlet {
                          HttpServletResponse response)
             throws ServletException, IOException {
 
-        // ★ ログインチェック（必要なら）
         HttpSession session = request.getSession(false);
-        if (session == null || !"ADMIN".equals(session.getAttribute("loginRole"))) {
-            response.sendRedirect(request.getContextPath() + "/admin/login");
+        if (session == null || !"MASTER".equals(session.getAttribute("loginRole"))) {
+            response.sendRedirect(request.getContextPath() + "/master/login");
             return;
         }
 
-        // ★ Master と同じ Repository から取得
         List<Consultation> consultations = repository.findAll();
         request.setAttribute("consultations", consultations);
 
-        request.getRequestDispatcher("/admin/consult_list.jsp")
+        request.getRequestDispatcher("/master/consult_list.jsp")
                .forward(request, response);
     }
 }

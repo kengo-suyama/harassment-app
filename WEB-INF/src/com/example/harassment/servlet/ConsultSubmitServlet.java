@@ -9,18 +9,17 @@ import java.io.IOException;
 
 public class ConsultSubmitServlet extends HttpServlet {
 
-    // メモリリポジトリ（全リクエストで共有）
     private static final MemoryConsultationRepository repository =
             new MemoryConsultationRepository();
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
 
-        // ===== 1. フォームの値を取得 =====
-
+        // ====== フォーム値の取得 ======
         String sheetDate = request.getParameter("sheetDate");
         String consultantName = request.getParameter("consultantName");
         String summary = request.getParameter("summary");
@@ -30,30 +29,18 @@ public class ConsultSubmitServlet extends HttpServlet {
         String reportedAt = request.getParameter("reportedAt");
         String followUp = request.getParameter("followUp");
 
-        String mentalScaleParam = request.getParameter("mentalScale");
-        Integer mentalScale = null;
-        if (mentalScaleParam != null && !mentalScaleParam.isBlank()) {
-            try {
-                mentalScale = Integer.parseInt(mentalScaleParam);
-            } catch (NumberFormatException e) {
-                mentalScale = null;
-            }
-        }
+        String mentalScaleStr = request.getParameter("mentalScale");
         String mentalDetail = request.getParameter("mentalDetail");
 
         String[] futureRequestValues = request.getParameterValues("futureRequest");
-        String futureRequest = null;
-        if (futureRequestValues != null && futureRequestValues.length > 0) {
-            futureRequest = String.join(",", futureRequestValues);
-        }
-
         String futureRequestOtherDetail = request.getParameter("futureRequestOtherDetail");
 
         String sharePermission = request.getParameter("sharePermission");
         String shareLimitedTargets = request.getParameter("shareLimitedTargets");
 
-        // ===== 2. モデルに詰める =====
+        // ====== Consultation へ詰める ======
         Consultation c = new Consultation();
+
         c.setSheetDate(sheetDate);
         c.setConsultantName(consultantName);
         c.setSummary(summary);
@@ -63,23 +50,37 @@ public class ConsultSubmitServlet extends HttpServlet {
         c.setReportedAt(reportedAt);
         c.setFollowUp(followUp);
 
+        int mentalScale = 0;
+        try {
+            if (mentalScaleStr != null && !mentalScaleStr.isEmpty()) {
+                mentalScale = Integer.parseInt(mentalScaleStr);
+            }
+        } catch (NumberFormatException e) {
+            mentalScale = 0;
+        }
         c.setMentalScale(mentalScale);
         c.setMentalDetail(mentalDetail);
 
-        c.setFutureRequest(futureRequest);
+        if (futureRequestValues != null && futureRequestValues.length > 0) {
+            String joined = String.join(",", futureRequestValues);
+            c.setFutureRequest(joined);
+        } else {
+            c.setFutureRequest(null);
+        }
         c.setFutureRequestOtherDetail(futureRequestOtherDetail);
 
         c.setSharePermission(sharePermission);
         c.setShareLimitedTargets(shareLimitedTargets);
 
-        // ===== 3. メモリ上に保存 =====
+        // 管理者確認フラグ 初期値 false
+        c.setAdminChecked(false);
+
+        // ====== 保存 ======
         repository.save(c);
 
-       // ===== 4. 完了画面へフォワード =====
-request.setAttribute("consultation", c);
-request.getRequestDispatcher("/consult/consult_thanks.jsp")
-       .forward(request, response);
-
- 
+        // 完了画面へ
+        request.setAttribute("consultation", c);
+        request.getRequestDispatcher("/consult_thanks.jsp")
+               .forward(request, response);
     }
 }

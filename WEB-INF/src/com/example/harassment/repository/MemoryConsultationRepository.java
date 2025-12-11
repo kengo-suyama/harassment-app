@@ -2,40 +2,57 @@ package com.example.harassment.repository;
 
 import com.example.harassment.model.Consultation;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public class MemoryConsultationRepository {
 
-    // メモリ上の保存場所（全件）
-    private static final List<Consultation> STORE = new CopyOnWriteArrayList<>();
+    private static final List<Consultation> STORE =
+            Collections.synchronizedList(new ArrayList<>());
 
-    // ID 採番用
-    private static final AtomicLong SEQUENCE = new AtomicLong(1);
+    private static int SEQUENCE = 1;
 
-    // 1件保存（新規）
-    public Consultation save(Consultation c) {
-        if (c.getId() == 0) {
-            c.setId(SEQUENCE.getAndIncrement());
-            STORE.add(c);
-        }
-        return c;
+    public MemoryConsultationRepository() {
     }
 
-    // 全件取得（管理者画面などで使える）
-    public List<Consultation> findAll() {
-        return new ArrayList<>(STORE);
-    }
-
-    // IDで1件取得（詳細画面用）
-    public Consultation findById(long id) {
-        for (Consultation c : STORE) {
-            if (c.getId() == id) {
-                return c;
+    public void save(Consultation c) {
+        synchronized (STORE) {
+            if (c.getId() == 0) {
+                // 新規登録
+                c.setId(SEQUENCE++);
+                STORE.add(c);
+            } else {
+                // 更新
+                for (int i = 0; i < STORE.size(); i++) {
+                    if (STORE.get(i).getId() == c.getId()) {
+                        STORE.set(i, c);
+                        return;
+                    }
+                }
+                // 見つからなければ追加
+                STORE.add(c);
             }
         }
-        return null;
+    }
+
+    public List<Consultation> findAll() {
+        synchronized (STORE) {
+            return new ArrayList<>(STORE);
+        }
+    }
+
+    public Consultation findById(int id) {
+        synchronized (STORE) {
+            Iterator<Consultation> it = STORE.iterator();
+            while (it.hasNext()) {
+                Consultation c = it.next();
+                if (c.getId() == id) {
+                    return c;
+                }
+            }
+            return null;
+        }
     }
 }

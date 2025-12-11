@@ -12,7 +12,8 @@
 
 <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-        <a href="/harassment-app/" class="navbar-brand text-decoration-none">
+        <!-- ★ contextPath を使っておくと安全 -->
+        <a href="<%= request.getContextPath() %>/" class="navbar-brand text-decoration-none">
             ハラスメント相談フォーム
         </a>
     </div>
@@ -30,6 +31,7 @@
                         ※ 入力された内容は、相談窓口の管理者・マスター権限者のみが閲覧します。
                     </p>
 
+                    <!-- ★★★ フォームはここからここまで！ ★★★ -->
                     <form action="<%= request.getContextPath() %>/consult/submit" method="post">
 
                         <!-- ==================================
@@ -39,22 +41,20 @@
                             <label class="form-label">シート記入日</label>
                             <input type="date" name="sheetDate" class="form-control">
                         </div>
-
+                    
                         <div class="mb-3">
                             <label class="form-label">相談者氏名（任意）</label>
-                            <input type="text" name="consultantName" class="form-control"
-                                   placeholder="例）山田太郎">
+                            <input type="text" name="consultantName" class="form-control">
                         </div>
-
+                    
                         <div class="mb-3">
                             <label class="form-label">相談の概要</label>
-                            <textarea name="summary" rows="6" class="form-control"
-                                      placeholder="いつ・どこで・誰が・誰に・どのような行為があったかを、わかる範囲でご記入ください。"></textarea>
+                            <textarea name="summary" rows="6" class="form-control"></textarea>
                         </div>
 
 
                         <!-- ==================================
-                             (PDF２枚目) 発生後の状況
+                             発生後の状況
                         =================================== -->
                         <h4 class="mt-4">発生後の状況</h4>
                         <div class="card mb-3">
@@ -100,7 +100,7 @@
 
 
                         <!-- ==================================
-                             (PDF２枚目) 心身の状態
+                             心身の状態
                         =================================== -->
                         <h4 class="mt-4">あなたの心身の状態</h4>
                         <div class="card mb-3">
@@ -133,7 +133,7 @@
 
 
                         <!-- ==================================
-                             (PDF２枚目) 今後の希望
+                             今後の希望
                         =================================== -->
                         <h4 class="mt-4">今後の対応に関する希望</h4>
                         <div class="card mb-3">
@@ -195,7 +195,7 @@
 
 
                         <!-- ==================================
-                             (PDF２枚目) 共有の可否 詳細版
+                             相談内容の共有の可否
                         =================================== -->
                         <h4 class="mt-4">相談内容の共有の可否</h4>
                         <div class="card mb-3">
@@ -250,8 +250,10 @@
                                 相談内容を送信する
                             </button>
                         </div>
+                    
 
                     </form>
+                    <!-- ★★★ フォーム終わり ★★★ -->
 
                 </div>
             </div>

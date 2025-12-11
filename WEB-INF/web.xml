@@ -1,60 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
-                             http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         xsi:schemaLocation="
+            http://xmlns.jcp.org/xml/ns/javaee
+            http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-    <display-name>Harassment Consultation App</display-name>
+    <display-name>harassment-app</display-name>
 
-    <!-- 相談フォーム表示サーブレット（※今後使わないならコメントアウトでもOK） -->
+    <!-- ルート /harassment-app/ で index.jsp を表示 -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- ========== 相談フォーム（職員側） ========== -->
     <servlet>
         <servlet-name>ConsultFormServlet</servlet-name>
         <servlet-class>com.example.harassment.servlet.ConsultFormServlet</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>ConsultFormServlet</servlet-name>
-        <!-- 相談フォームのURL -->
-        <url-pattern>/consult/new</url-pattern>
+        <url-pattern>/consult/form</url-pattern>
     </servlet-mapping>
 
-    <!-- 相談送信サーブレット -->
     <servlet>
         <servlet-name>ConsultSubmitServlet</servlet-name>
         <servlet-class>com.example.harassment.servlet.ConsultSubmitServlet</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>ConsultSubmitServlet</servlet-name>
-        <!-- consult_form.jsp の form action から呼ばれるURL -->
         <url-pattern>/consult/submit</url-pattern>
     </servlet-mapping>
 
-    <!-- 管理者用 相談一覧サーブレット -->
-    <servlet>
-        <servlet-name>AdminConsultListServlet</servlet-name>
-        <servlet-class>com.example.harassment.servlet.AdminConsultListServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>AdminConsultListServlet</servlet-name>
-        <!-- ★ このURLでアクセス： /harassment-app/admin/consult/list -->
-        <url-pattern>/admin/consult/list</url-pattern>
-    </servlet-mapping>
-
-    <!-- 管理者用 相談詳細サーブレット -->
-    <servlet>
-        <servlet-name>AdminConsultDetailServlet</servlet-name>
-        <servlet-class>com.example.harassment.servlet.AdminConsultDetailServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>AdminConsultDetailServlet</servlet-name>
-        <url-pattern>/admin/consult/detail</url-pattern>
-    </servlet-mapping>
-
-    <!-- 管理者ログイン -->
+    <!-- ========== 管理者ログイン ========== -->
     <servlet>
         <servlet-name>AdminLoginServlet</servlet-name>
         <servlet-class>com.example.harassment.servlet.AdminLoginServlet</servlet-class>
@@ -64,7 +42,7 @@
         <url-pattern>/admin/login</url-pattern>
     </servlet-mapping>
 
-    <!-- マスターログイン -->
+    <!-- ========== マスターログイン ========== -->
     <servlet>
         <servlet-name>MasterLoginServlet</servlet-name>
         <servlet-class>com.example.harassment.servlet.MasterLoginServlet</servlet-class>
@@ -74,7 +52,7 @@
         <url-pattern>/master/login</url-pattern>
     </servlet-mapping>
 
-    <!-- パスワード変更 -->
+    <!-- ========== パスワード変更 ========== -->
     <servlet>
         <servlet-name>PasswordChangeServlet</servlet-name>
         <servlet-class>com.example.harassment.servlet.PasswordChangeServlet</servlet-class>
@@ -84,9 +62,77 @@
         <url-pattern>/password/change</url-pattern>
     </servlet-mapping>
 
-    <!-- 最初に表示する JSP を index.jsp にする -->
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
+            <!-- ===== 相談一覧（管理者）(/admin/consult/list) ===== -->
+    <servlet>
+        <servlet-name>AdminConsultListServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminConsultListServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AdminConsultListServlet</servlet-name>
+        <url-pattern>/admin/consult/list</url-pattern>
+    </servlet-mapping>
+
+
+
+    <!-- ========== 管理者：相談詳細 ========== -->
+    <servlet>
+        <servlet-name>AdminConsultDetailServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminConsultDetailServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminConsultDetailServlet</servlet-name>
+        <url-pattern>/admin/consult/detail</url-pattern>
+    </servlet-mapping>
+
+    <!-- ========== 管理者：確認チェックボタン ========== -->
+    <servlet>
+        <servlet-name>AdminConsultCheckServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminConsultCheckServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminConsultCheckServlet</servlet-name>
+        <url-pattern>/admin/consult/check</url-pattern>
+    </servlet-mapping>
+
+    <!-- ========== 管理者：対応内容入力画面 ========== -->
+    <servlet>
+        <servlet-name>AdminFollowupEditServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminFollowupEditServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminFollowupEditServlet</servlet-name>
+        <url-pattern>/admin/consult/followup/edit</url-pattern>
+    </servlet-mapping>
+
+    <!-- ========== 管理者：対応内容保存 ========== -->
+    <servlet>
+        <servlet-name>AdminConsultFollowupSaveServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminConsultFollowupSaveServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminConsultFollowupSaveServlet</servlet-name>
+        <url-pattern>/admin/consult/followup/save</url-pattern>
+    </servlet-mapping>
+
+    <!-- ========== マスター：相談一覧 ========== -->
+    <servlet>
+        <servlet-name>MasterConsultListServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.MasterConsultListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MasterConsultListServlet</servlet-name>
+        <url-pattern>/master/consult/list</url-pattern>
+    </servlet-mapping>
+
+    <!-- ========== マスター：対応結果閲覧 ========== -->
+    <servlet>
+        <servlet-name>MasterConsultFollowupViewServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.MasterConsultFollowupViewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MasterConsultFollowupViewServlet</servlet-name>
+        <url-pattern>/master/consult/followup/view</url-pattern>
+    </servlet-mapping>
 
 </web-app>
