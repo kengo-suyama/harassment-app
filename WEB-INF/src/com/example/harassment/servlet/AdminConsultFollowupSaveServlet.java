@@ -4,19 +4,12 @@ import com.example.harassment.model.Consultation;
 import com.example.harassment.repository.MemoryConsultationRepository;
 
 import javax.servlet.ServletException;
-//import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
 
-/**
- * 管理者の対応内容を「一時保存」または「提出（確定）」として保存するサーブレット
- */
-////@WebServlet("/admin/consult/followup/save")
 public class AdminConsultFollowupSaveServlet extends HttpServlet {
 
-    private final MemoryConsultationRepository repository =
+    private static final MemoryConsultationRepository repository =
             new MemoryConsultationRepository();
 
     @Override
@@ -24,35 +17,46 @@ public class AdminConsultFollowupSaveServlet extends HttpServlet {
                           HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8");
-
-        String idStr        = request.getParameter("id");
-        String followUpText = request.getParameter("followUpText");
-        String submitType   = request.getParameter("submitType"); // "draft" or "final"
-
-        try {
-            int id = Integer.parseInt(idStr);
-            Consultation c = repository.findById(id);
-            if (c != null) {
-
-                if ("draft".equals(submitType)) {
-                    // 一時保存：ドラフトに保存
-                    c.setFollowUpDraft(followUpText);
-
-                } else if ("final".equals(submitType)) {
-                    // 提出：確定版として保存し、ドラフトはクリア
-                    c.setFollowUpAction(followUpText);
-                    c.setFollowUpDraft(null);
-                    // 提出されたので「確認済」にしてしまう
-                    c.setAdminChecked(true);
-                }
-            }
-        } catch (NumberFormatException e) {
-            // ID が不正な場合は何もしない
+        HttpSession session = request.getSession(false);
+        if (session == null || !"ADMIN".equals(session.getAttribute("loginRole"))) {
+            response.sendRedirect(request.getContextPath() + "/admin/login");
+            return;
         }
 
-        // 保存後は詳細画面へ戻す
-        response.sendRedirect(request.getContextPath()
-                              + "/admin/consult/detail?id=" + idStr);
+        request.setCharacterEncoding("UTF-8");
+
+        String idStr = request.getParameter("id");
+        String mode = request.getParameter("mode"); // "draft" or "final"
+        String followUpText = request.getParameter("followUpText");
+
+        if (idStr == null || idStr.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/admin/consult/list");
+            return;
+        }
+
+        int id = Integer.parseInt(idStr);
+        Consultation c = repository.findById(id);
+        if (c == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/consult/list");
+            return;
+        }
+
+        if ("draft".equals(mode)) {
+            // 一時保存
+            c.setFollowUpDraft(followUpText);
+            // adminChecked はまだ false のままでもOK
+        } else if ("final".equals(mode)) {
+            // 確定
+            c.setFollowUpAction(followUpText);
+            c.setFollowUpDraft(null);
+            c.setAdminChecked(true);
+        }
+
+        repository.save(c);
+
+        // 詳細画面に戻る
+        response.sendRedirect(
+                request.getContextPath() + "/admin/consult/detail?id=" + c.getId()
+        );
     }
 }

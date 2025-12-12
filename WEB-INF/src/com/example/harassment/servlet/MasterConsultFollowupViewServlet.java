@@ -24,23 +24,19 @@ public class MasterConsultFollowupViewServlet extends HttpServlet {
         }
 
         String idStr = request.getParameter("id");
-        Consultation consultation = null;
-
-        if (idStr != null && !idStr.isEmpty()) {
-            try {
-                int id = Integer.parseInt(idStr);
-                consultation = repository.findById(id);   // ★ インスタンスメソッドとして呼び出す
-            } catch (NumberFormatException e) {
-                // ignore
-            }
-        }
-
-        if (consultation == null) {
+        if (idStr == null || idStr.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/master/consult/list");
             return;
         }
 
-        request.setAttribute("consultation", consultation);
+        int id = Integer.parseInt(idStr);
+        Consultation c = repository.findById(id);
+        if (c == null || c.getFollowUpAction() == null) {
+            response.sendRedirect(request.getContextPath() + "/master/consult/list");
+            return;
+        }
+
+        request.setAttribute("consultation", c);
         request.getRequestDispatcher("/master/consult_followup_view.jsp")
                .forward(request, response);
     }

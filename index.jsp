@@ -33,7 +33,8 @@
                     <div class="d-grid gap-3 mt-4">
 
                         <!-- ★相談フォーム：サーブレット /consult/new を呼び出す -->
-                        <a href="<%= request.getContextPath() %>/consult/consult_form.jsp" class="btn btn-primary">
+                        <a href="<%= request.getContextPath() %>/consult/form" class="btn btn-primary">
+
                             相談を送信する（相談者用）
                         </a>
 

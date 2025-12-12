@@ -19,68 +19,59 @@ public class ConsultSubmitServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        // ====== フォーム値の取得 ======
-        String sheetDate = request.getParameter("sheetDate");
-        String consultantName = request.getParameter("consultantName");
-        String summary = request.getParameter("summary");
-
-        String reportedExists = request.getParameter("reportedExists");
-        String reportedPerson = request.getParameter("reportedPerson");
-        String reportedAt = request.getParameter("reportedAt");
-        String followUp = request.getParameter("followUp");
-
-        String mentalScaleStr = request.getParameter("mentalScale");
-        String mentalDetail = request.getParameter("mentalDetail");
-
-        String[] futureRequestValues = request.getParameterValues("futureRequest");
-        String futureRequestOtherDetail = request.getParameter("futureRequestOtherDetail");
-
-        String sharePermission = request.getParameter("sharePermission");
-        String shareLimitedTargets = request.getParameter("shareLimitedTargets");
-
-        // ====== Consultation へ詰める ======
         Consultation c = new Consultation();
 
-        c.setSheetDate(sheetDate);
-        c.setConsultantName(consultantName);
-        c.setSummary(summary);
+        // ===== フォームの値を詰める =====
+        c.setSheetDate(request.getParameter("sheetDate"));
+        c.setConsultantName(request.getParameter("consultantName"));
+        c.setSummary(request.getParameter("summary"));
 
-        c.setReportedExists(reportedExists);
-        c.setReportedPerson(reportedPerson);
-        c.setReportedAt(reportedAt);
-        c.setFollowUp(followUp);
+        c.setReportedExists(request.getParameter("reportedExists"));
+        c.setReportedPerson(request.getParameter("reportedPerson"));
+        c.setReportedAt(request.getParameter("reportedAt"));
+        c.setFollowUp(request.getParameter("followUp"));
 
+        String mentalScaleStr = request.getParameter("mentalScale");
         int mentalScale = 0;
         try {
-            if (mentalScaleStr != null && !mentalScaleStr.isEmpty()) {
-                mentalScale = Integer.parseInt(mentalScaleStr);
-            }
+            mentalScale = Integer.parseInt(mentalScaleStr);
         } catch (NumberFormatException e) {
-            mentalScale = 0;
+            // 変換できなければ 0 のまま
         }
         c.setMentalScale(mentalScale);
-        c.setMentalDetail(mentalDetail);
+        c.setMentalDetail(request.getParameter("mentalDetail"));
 
-        if (futureRequestValues != null && futureRequestValues.length > 0) {
-            String joined = String.join(",", futureRequestValues);
-            c.setFutureRequest(joined);
+        // 未来の希望（チェックボックス複数）をカンマ区切りにする
+        String[] futureRequests = request.getParameterValues("futureRequest");
+        if (futureRequests != null && futureRequests.length > 0) {
+            c.setFutureRequest(String.join(",", futureRequests));
         } else {
-            c.setFutureRequest(null);
+            c.setFutureRequest("");
         }
-        c.setFutureRequestOtherDetail(futureRequestOtherDetail);
+        c.setFutureRequestOtherDetail(
+                request.getParameter("futureRequestOtherDetail")
+        );
 
-        c.setSharePermission(sharePermission);
-        c.setShareLimitedTargets(shareLimitedTargets);
+        c.setSharePermission(request.getParameter("sharePermission"));
+        c.setShareLimitedTargets(
+                request.getParameter("shareLimitedTargets")
+        );
 
-        // 管理者確認フラグ 初期値 false
+        // 管理者対応欄の初期化
         c.setAdminChecked(false);
+        c.setFollowUpDraft(null);
+        c.setFollowUpAction(null);
 
-        // ====== 保存 ======
+        // ステータス初期値（今後拡張予定）
+        c.setStatus("NEW"); // 未対応
+
+        // ===== 保存 =====
         repository.save(c);
 
-        // 完了画面へ
+        // 確認用に 1件だけ渡してサンクス画面へ
         request.setAttribute("consultation", c);
-        request.getRequestDispatcher("/consult_thanks.jsp")
-               .forward(request, response);
+        request.getRequestDispatcher("/consult/thanks.jsp")
+       .forward(request, response);
+
     }
 }

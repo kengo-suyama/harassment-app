@@ -18,14 +18,12 @@ public class AdminConsultListServlet extends HttpServlet {
                          HttpServletResponse response)
             throws ServletException, IOException {
 
-        // ★ ログインチェック（必要なら）
         HttpSession session = request.getSession(false);
         if (session == null || !"ADMIN".equals(session.getAttribute("loginRole"))) {
             response.sendRedirect(request.getContextPath() + "/admin/login");
             return;
         }
 
-        // ★ Master と同じ Repository から取得
         List<Consultation> consultations = repository.findAll();
         request.setAttribute("consultations", consultations);
 

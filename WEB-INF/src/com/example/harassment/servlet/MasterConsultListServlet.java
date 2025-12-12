@@ -6,6 +6,7 @@ import com.example.harassment.repository.MemoryConsultationRepository;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MasterConsultListServlet extends HttpServlet {
@@ -24,8 +25,16 @@ public class MasterConsultListServlet extends HttpServlet {
             return;
         }
 
-        List<Consultation> consultations = repository.findAll();
-        request.setAttribute("consultations", consultations);
+        List<Consultation> all = repository.findAll();
+        List<Consultation> confirmed = new ArrayList<>();
+
+        for (Consultation c : all) {
+            if (c.getFollowUpAction() != null && !c.getFollowUpAction().isEmpty()) {
+                confirmed.add(c);
+            }
+        }
+
+        request.setAttribute("consultations", confirmed);
 
         request.getRequestDispatcher("/master/consult_list.jsp")
                .forward(request, response);

@@ -13,28 +13,31 @@ public class AdminFollowupEditServlet extends HttpServlet {
             new MemoryConsultationRepository();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
             throws ServletException, IOException {
 
-        String idStr = request.getParameter("id");
-        Consultation consultation = null;
-
-        if (idStr != null && !idStr.isEmpty()) {
-            try {
-                int id = Integer.parseInt(idStr);
-                consultation = repository.findById(id);
-            } catch (NumberFormatException e) {
-                // ignore
-            }
+        HttpSession session = request.getSession(false);
+        if (session == null || !"ADMIN".equals(session.getAttribute("loginRole"))) {
+            response.sendRedirect(request.getContextPath() + "/admin/login");
+            return;
         }
 
-        if (consultation == null) {
+        String idStr = request.getParameter("id");
+        if (idStr == null || idStr.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/admin/consult/list");
             return;
         }
 
-        request.setAttribute("consultation", consultation);
-        request.getRequestDispatcher("/admin/consult_followup_form.jsp")
+        int id = Integer.parseInt(idStr);
+        Consultation c = repository.findById(id);
+        if (c == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/consult/list");
+            return;
+        }
+
+        request.setAttribute("consultation", c);
+        request.getRequestDispatcher("/admin/followup_edit.jsp")
                .forward(request, response);
     }
 }

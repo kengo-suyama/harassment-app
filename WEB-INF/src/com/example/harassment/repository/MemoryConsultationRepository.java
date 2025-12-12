@@ -14,24 +14,18 @@ public class MemoryConsultationRepository {
 
     private static int SEQUENCE = 1;
 
-    public MemoryConsultationRepository() {
-    }
-
     public void save(Consultation c) {
         synchronized (STORE) {
             if (c.getId() == 0) {
-                // 新規登録
                 c.setId(SEQUENCE++);
                 STORE.add(c);
             } else {
-                // 更新
                 for (int i = 0; i < STORE.size(); i++) {
                     if (STORE.get(i).getId() == c.getId()) {
                         STORE.set(i, c);
                         return;
                     }
                 }
-                // 見つからなければ追加
                 STORE.add(c);
             }
         }

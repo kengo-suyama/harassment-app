@@ -13,7 +13,9 @@
 
 <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-        <a href="<%= request.getContextPath() %>/" class="navbar-brand">ハラスメント相談システム</a>
+        <a href="<%= request.getContextPath() %>/" class="navbar-brand">
+            ハラスメント相談システム
+        </a>
         <span class="navbar-text text-white">管理者画面</span>
     </div>
 </nav>
@@ -26,34 +28,72 @@
                 (List<Consultation>) request.getAttribute("consultations");
     %>
 
-    <table class="table table-sm table-striped">
+    <table class="table table-sm table-striped align-middle">
         <thead>
         <tr>
             <th>ID</th>
-            <th>シート記入日</th>
-            <th>相談者</th>
-            <th>相談概要</th>
+            <th>相談日</th>
+            <th>氏名</th>
+            <th>概要</th>
+            <th>確認</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody>
         <%
             if (consultations == null || consultations.isEmpty()) {
         %>
-            <tr>
-                <td colspan="4" class="text-center text-muted">
-                    まだ相談は登録されていません。
-                </td>
-            </tr>
+        <tr>
+            <td colspan="6" class="text-center text-muted">
+                まだ相談は登録されていません。
+            </td>
+        </tr>
         <%
             } else {
                 for (Consultation c : consultations) {
         %>
-            <tr>
-                <td><%= c.getId() %></td>
-                <td><%= c.getSheetDate() %></td>
-                <td><%= c.getConsultantName() %></td>
-                <td><%= c.getSummary() %></td>
-            </tr>
+        <tr>
+            <td><%= c.getId() %></td>
+            <td><%= c.getSheetDate() %></td>
+            <td><%= c.getConsultantName() %></td>
+            <td><%= c.getSummary() %></td>
+            <td>
+                <%
+                    if (c.isAdminChecked()) {
+                %>
+                <span class="badge bg-success">確認済</span>
+                <%
+                    } else {
+                %>
+                <span class="badge bg-secondary">未確認</span>
+                <%
+                    }
+                %>
+            </td>
+            <td>
+                <!-- 詳細ボタン -->
+                <a href="<%= request.getContextPath() %>/admin/consult/detail?id=<%= c.getId() %>"
+                   class="btn btn-sm btn-outline-primary">
+                    詳細
+                </a>
+
+                <!-- 確認チェックボタン（未確認のときだけ） -->
+                <%
+                    if (!c.isAdminChecked()) {
+                %>
+                <form method="post"
+                      action="<%= request.getContextPath() %>/admin/consult/check"
+                      class="d-inline">
+                    <input type="hidden" name="id" value="<%= c.getId() %>">
+                    <button type="submit" class="btn btn-sm btn-outline-success">
+                        確認チェック
+                    </button>
+                </form>
+                <%
+                    }
+                %>
+            </td>
+        </tr>
         <%
                 }
             }

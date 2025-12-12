@@ -14,7 +14,6 @@
           rel="stylesheet">
 
     <style>
-        /* 印刷時に不要な部分を非表示 */
         @media print {
             .no-print {
                 display: none !important;
@@ -41,12 +40,15 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
 
-            <!-- 相談者記入内容（管理者画面と同じ） -->
+            <!-- 相談者記入の相談シート（管理者画面と同じ内容） -->
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h2 class="h5 mb-3">相談シート内容（相談者の入力）</h2>
 
                     <dl class="row mb-0">
+
+                        <dt class="col-sm-3">相談ID</dt>
+                        <dd class="col-sm-9"><%= c.getId() %></dd>
 
                         <dt class="col-sm-3">記入日</dt>
                         <dd class="col-sm-9"><%= c.getSheetDate() %></dd>
@@ -73,11 +75,11 @@
                         <dd class="col-sm-9"><%= c.getMentalScale() %></dd>
 
                         <dt class="col-sm-3">心身の状態（詳細）</dt>
-                        <dd class="col-sm-9"><%= c.getFutureRequestLabelString() %></dd>
-
+                        <dd class="col-sm-9"><pre><%= c.getMentalDetail() %></pre></dd>
 
                         <dt class="col-sm-3">今後の希望</dt>
-                        <dd class="col-sm-9"><%= c.getFutureRequestLabelString() %></dd>
+                        <dd class="col-sm-9"><%= c.getFutureRequestLabel() %></dd>
+
                         <dt class="col-sm-3">希望 詳細</dt>
                         <dd class="col-sm-9"><%= c.getFutureRequestOtherDetail() %></dd>
 
@@ -90,10 +92,10 @@
                 </div>
             </div>
 
-            <!-- 管理者が確定した内容 -->
+            <!-- 管理者が確定した対応内容だけを表示（編集不可） -->
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h5 mb-3 text-primary">管理者が確定した対応内容</h2>
+                    <h2 class="h5 mb-3 text-primary">確定した対応内容（管理者記入）</h2>
 
                     <% if (c.getFollowUpAction() != null && !c.getFollowUpAction().isEmpty()) { %>
                         <pre><%= c.getFollowUpAction() %></pre>
@@ -103,12 +105,14 @@
                 </div>
             </div>
 
-            <!-- 印刷ボタン／戻る -->
+            <!-- 戻る／印刷ボタン -->
             <div class="d-flex justify-content-between no-print mb-4">
                 <a href="<%= request.getContextPath() %>/master/consult/list"
-                   class="btn btn-outline-secondary">一覧へ戻る</a>
+                   class="btn btn-outline-secondary">
+                    一覧へ戻る
+                </a>
 
-                <button onclick="window.print()" class="btn btn-success">
+                <button type="button" class="btn btn-success" onclick="window.print()">
                     印刷する
                 </button>
             </div>
