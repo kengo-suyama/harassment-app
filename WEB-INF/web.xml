@@ -26,35 +26,34 @@
     </filter-mapping>
 
     <!-- 相談フォーム表示 -->
-    <servlet>
-        <servlet-name>ConsultFormServlet</servlet-name>
-        <servlet-class>com.example.harassment.servlet.ConsultFormServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ConsultFormServlet</servlet-name>
-        <url-pattern>/consult/form</url-pattern>
-    </servlet-mapping>
+<servlet>
+  <servlet-name>ConsultFormServlet</servlet-name>
+  <servlet-class>com.example.harassment.servlet.ConsultFormServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>ConsultFormServlet</servlet-name>
+  <url-pattern>/consult/form</url-pattern>
+</servlet-mapping>
 
-        <!-- 相談内容 確認画面用 -->
-    <servlet>
-        <servlet-name>ConsultConfirmServlet</servlet-name>
-        <servlet-class>com.example.harassment.servlet.ConsultConfirmServlet</servlet-class>
-    </servlet>
+<!-- 相談内容 確認画面用 -->
+<servlet>
+  <servlet-name>ConsultConfirmServlet</servlet-name>
+  <servlet-class>com.example.harassment.servlet.ConsultConfirmServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>ConsultConfirmServlet</servlet-name>
+  <url-pattern>/consult/confirm</url-pattern>
+</servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>ConsultConfirmServlet</servlet-name>
-        <url-pattern>/consult/confirm</url-pattern>
-    </servlet-mapping>
-
-    <!-- 相談送信 -->
-    <servlet>
-        <servlet-name>ConsultSubmitServlet</servlet-name>
-        <servlet-class>com.example.harassment.servlet.ConsultSubmitServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ConsultSubmitServlet</servlet-name>
-        <url-pattern>/consult/submit</url-pattern>
-    </servlet-mapping>
+<!-- 相談送信 -->
+<servlet>
+  <servlet-name>ConsultSubmitServlet</servlet-name>
+  <servlet-class>com.example.harassment.servlet.ConsultSubmitServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>ConsultSubmitServlet</servlet-name>
+  <url-pattern>/consult/submit</url-pattern>
+</servlet-mapping>
 
     <!-- 管理者ログイン -->
     <servlet>

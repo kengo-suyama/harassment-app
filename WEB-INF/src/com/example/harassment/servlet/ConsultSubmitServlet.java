@@ -21,7 +21,6 @@ public class ConsultSubmitServlet extends HttpServlet {
 
         Consultation c = new Consultation();
 
-        // ===== フォームの値を詰める =====
         c.setSheetDate(request.getParameter("sheetDate"));
         c.setConsultantName(request.getParameter("consultantName"));
         c.setSummary(request.getParameter("summary"));
@@ -31,47 +30,51 @@ public class ConsultSubmitServlet extends HttpServlet {
         c.setReportedAt(request.getParameter("reportedAt"));
         c.setFollowUp(request.getParameter("followUp"));
 
-        String mentalScaleStr = request.getParameter("mentalScale");
         int mentalScale = 0;
         try {
-            mentalScale = Integer.parseInt(mentalScaleStr);
+            String mentalScaleStr = request.getParameter("mentalScale");
+            if (mentalScaleStr != null && !mentalScaleStr.isEmpty()) {
+                mentalScale = Integer.parseInt(mentalScaleStr);
+            }
         } catch (NumberFormatException e) {
-            // 変換できなければ 0 のまま
+            mentalScale = 0;
         }
         c.setMentalScale(mentalScale);
         c.setMentalDetail(request.getParameter("mentalDetail"));
 
-        // 未来の希望（チェックボックス複数）をカンマ区切りにする
+        // チェックボックス複数 → カンマ区切り
         String[] futureRequests = request.getParameterValues("futureRequest");
         if (futureRequests != null && futureRequests.length > 0) {
             c.setFutureRequest(String.join(",", futureRequests));
         } else {
             c.setFutureRequest("");
         }
-        c.setFutureRequestOtherDetail(
-                request.getParameter("futureRequestOtherDetail")
-        );
+        c.setFutureRequestOtherDetail(request.getParameter("futureRequestOtherDetail"));
 
         c.setSharePermission(request.getParameter("sharePermission"));
-        c.setShareLimitedTargets(
-                request.getParameter("shareLimitedTargets")
-        );
+        c.setShareLimitedTargets(request.getParameter("shareLimitedTargets"));
 
-        // 管理者対応欄の初期化
+        // 管理者対応欄 初期化
         c.setAdminChecked(false);
         c.setFollowUpDraft(null);
         c.setFollowUpAction(null);
 
-        // ステータス初期値（今後拡張予定）
-        c.setStatus("NEW"); // 未対応
+        // ステータス初期値
+        c.setStatus("NEW");
 
-        // ===== 保存 =====
         repository.save(c);
 
-        // 確認用に 1件だけ渡してサンクス画面へ
         request.setAttribute("consultation", c);
         request.getRequestDispatcher("/consult/thanks.jsp")
-       .forward(request, response);
+               .forward(request, response);
+    }
 
+    @Override
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // GET直アクセスはフォームへ（405回避）
+        response.sendRedirect(request.getContextPath() + "/consult/form");
     }
 }

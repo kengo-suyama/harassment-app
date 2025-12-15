@@ -12,15 +12,13 @@ import java.io.IOException;
  */
 public class ConsultFormServlet extends HttpServlet {
 
-    private static final String FORM_JSP = "/consult/consult_form.jsp";
-
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-        request.getRequestDispatcher(FORM_JSP)
+        request.getRequestDispatcher("/consult/consult_form.jsp")
                .forward(request, response);
     }
 
@@ -29,9 +27,9 @@ public class ConsultFormServlet extends HttpServlet {
                           HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 「戻って修正する」から POST されたときも同じ JSP を表示する
+        // confirm から「戻って修正する」で POST された値をそのままフォームへ
         request.setCharacterEncoding("UTF-8");
-        request.getRequestDispatcher(FORM_JSP)
+        request.getRequestDispatcher("/consult/consult_form.jsp")
                .forward(request, response);
     }
 }

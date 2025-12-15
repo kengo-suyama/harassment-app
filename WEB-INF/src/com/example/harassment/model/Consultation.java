@@ -10,259 +10,155 @@ import java.util.stream.Collectors;
  */
 public class Consultation {
 
-    // ====== 連番ID ======
     private int id;
 
-    // ====== 相談シートの主な項目 ======
-    private String sheetDate;                // シート記入日（文字列でOK）
-    private String consultantName;           // 相談者氏名（任意）
-    private String summary;                  // 相談の概要
+    private String sheetDate;
+    private String consultantName;
+    private String summary;
 
-    // 発生後の状況
-    // reportedExists: "NONE" / "SOMEONE" 等のコード値を想定
-    private String reportedExists;           // 「いる」「いない」などのコード
-    private String reportedPerson;           // 相談相手
-    private String reportedAt;               // 相談日時
-    private String followUp;                 // その後の対応（相談者側の自己記入）
+    private String reportedExists;     // YES / NO（フォームの値）
+    private String reportedPerson;
+    private String reportedAt;         // datetime-local の値（文字列で保持）
+    private String followUp;
 
-    // 心身の状態
-    private int mentalScale;                 // 1〜10
-    private String mentalDetail;             // 心身の状態の詳細
+    private int mentalScale;
+    private String mentalDetail;
 
-    // 今後の希望（カンマ区切りで複数コードを保存）
-    // 例: "LISTEN,WORK_CHANGE,ENV_IMPROVE"
-    private String futureRequest;            // コード列（カンマ区切り）
-    private String futureRequestOtherDetail; // その他の具体的な希望
+    // 今後の希望（カンマ区切り）
+    private String futureRequest;      // LISTEN_ONLY,WAIT,FACT_CHECK,WARN,WORK_CHANGE,OTHER など
+    private String futureRequestOtherDetail;
 
-    // 共有の可否
-    // sharePermission: "ALL_OK" / "LIMITED" / "NO_SHARE"
-    private String sharePermission;          // 共有範囲コード
-    private String shareLimitedTargets;      // 限定共有の相手（テキスト）
+    private String sharePermission;    // ALL_OK / LIMITED / NO_SHARE
+    private String shareLimitedTargets;
 
-    // 管理者対応欄
-    private boolean adminChecked;            // 管理者が確認済みか
-    private String followUpDraft;            // 管理者が編集中の対応内容（下書き）
-    private String followUpAction;           // 確定した対応内容（マスターに見せる用）
+    private boolean adminChecked;
+    private String followUpDraft;
+    private String followUpAction;
 
-    // 相談の進行状況
     // NEW / CHECKING / IN_PROGRESS / DONE
-    private String status; 
+    private String status;
 
-    // ====== 通常の getter / setter ======
+    // ===== getter/setter =====
 
-    public int getId() {
-        return id;
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getSheetDate() { return sheetDate; }
+    public void setSheetDate(String sheetDate) { this.sheetDate = sheetDate; }
+
+    public String getConsultantName() { return consultantName; }
+    public void setConsultantName(String consultantName) { this.consultantName = consultantName; }
+
+    public String getSummary() { return summary; }
+    public void setSummary(String summary) { this.summary = summary; }
+
+    public String getReportedExists() { return reportedExists; }
+    public void setReportedExists(String reportedExists) { this.reportedExists = reportedExists; }
+
+    public String getReportedPerson() { return reportedPerson; }
+    public void setReportedPerson(String reportedPerson) { this.reportedPerson = reportedPerson; }
+
+    public String getReportedAt() { return reportedAt; }
+    public void setReportedAt(String reportedAt) { this.reportedAt = reportedAt; }
+
+    public String getFollowUp() { return followUp; }
+    public void setFollowUp(String followUp) { this.followUp = followUp; }
+
+    public int getMentalScale() { return mentalScale; }
+    public void setMentalScale(int mentalScale) { this.mentalScale = mentalScale; }
+
+    public String getMentalDetail() { return mentalDetail; }
+    public void setMentalDetail(String mentalDetail) { this.mentalDetail = mentalDetail; }
+
+    public String getFutureRequest() { return futureRequest; }
+    public void setFutureRequest(String futureRequest) { this.futureRequest = futureRequest; }
+
+    public String getFutureRequestOtherDetail() { return futureRequestOtherDetail; }
+    public void setFutureRequestOtherDetail(String futureRequestOtherDetail) { this.futureRequestOtherDetail = futureRequestOtherDetail; }
+
+    public String getSharePermission() { return sharePermission; }
+    public void setSharePermission(String sharePermission) { this.sharePermission = sharePermission; }
+
+    public String getShareLimitedTargets() { return shareLimitedTargets; }
+    public void setShareLimitedTargets(String shareLimitedTargets) { this.shareLimitedTargets = shareLimitedTargets; }
+
+    public boolean isAdminChecked() { return adminChecked; }
+    public void setAdminChecked(boolean adminChecked) { this.adminChecked = adminChecked; }
+
+    public String getFollowUpDraft() { return followUpDraft; }
+    public void setFollowUpDraft(String followUpDraft) { this.followUpDraft = followUpDraft; }
+
+    public String getFollowUpAction() { return followUpAction; }
+    public void setFollowUpAction(String followUpAction) { this.followUpAction = followUpAction; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    // ===== 日本語ラベル =====
+
+    public String getReportedExistsLabel() {
+        if (reportedExists == null || reportedExists.isEmpty()) return "";
+        switch (reportedExists) {
+            case "YES": return "すでに誰かに相談している";
+            case "NO":  return "まだ誰にも相談していない";
+            // 旧コード互換
+            case "NONE": return "まだ誰にも相談していない";
+            case "SOMEONE": return "すでに誰かに相談している";
+            default: return reportedExists;
+        }
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getSharePermissionLabel() {
+        if (sharePermission == null || sharePermission.isEmpty()) return "";
+        switch (sharePermission) {
+            case "ALL_OK": return "必要と判断される関係者には共有してよい";
+            case "LIMITED": return "共有する相手を限定してほしい";
+            case "NO_SHARE": return "相談窓口以外には共有しないでほしい";
+            default: return sharePermission;
+        }
     }
 
-    public String getSheetDate() {
-        return sheetDate;
-    }
-
-    public void setSheetDate(String sheetDate) {
-        this.sheetDate = sheetDate;
-    }
-
-    public String getConsultantName() {
-        return consultantName;
-    }
-
-    public void setConsultantName(String consultantName) {
-        this.consultantName = consultantName;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    public String getReportedExists() {
-        return reportedExists;
-    }
-
-    public void setReportedExists(String reportedExists) {
-        this.reportedExists = reportedExists;
-    }
-
-    public String getReportedPerson() {
-        return reportedPerson;
-    }
-
-    public void setReportedPerson(String reportedPerson) {
-        this.reportedPerson = reportedPerson;
-    }
-
-    public String getReportedAt() {
-        return reportedAt;
-    }
-
-    public void setReportedAt(String reportedAt) {
-        this.reportedAt = reportedAt;
-    }
-
-    public String getFollowUp() {
-        return followUp;
-    }
-
-    public void setFollowUp(String followUp) {
-        this.followUp = followUp;
-    }
-
-    public int getMentalScale() {
-        return mentalScale;
-    }
-
-    public void setMentalScale(int mentalScale) {
-        this.mentalScale = mentalScale;
-    }
-
-    public String getMentalDetail() {
-        return mentalDetail;
-    }
-
-    public void setMentalDetail(String mentalDetail) {
-        this.mentalDetail = mentalDetail;
-    }
-
-    public String getFutureRequest() {
-        return futureRequest;
-    }
-
-    public void setFutureRequest(String futureRequest) {
-        this.futureRequest = futureRequest;
-    }
-
-    public String getFutureRequestOtherDetail() {
-        return futureRequestOtherDetail;
-    }
-
-    public void setFutureRequestOtherDetail(String futureRequestOtherDetail) {
-        this.futureRequestOtherDetail = futureRequestOtherDetail;
-    }
-
-    public String getSharePermission() {
-        return sharePermission;
-    }
-
-    public void setSharePermission(String sharePermission) {
-        this.sharePermission = sharePermission;
-    }
-
-    public String getShareLimitedTargets() {
-        return shareLimitedTargets;
-    }
-
-    public void setShareLimitedTargets(String shareLimitedTargets) {
-        this.shareLimitedTargets = shareLimitedTargets;
-    }
-
-    public boolean isAdminChecked() {
-        return adminChecked;
-    }
-
-    public void setAdminChecked(boolean adminChecked) {
-        this.adminChecked = adminChecked;
-    }
-
-    public String getFollowUpDraft() {
-        return followUpDraft;
-    }
-
-    public void setFollowUpDraft(String followUpDraft) {
-        this.followUpDraft = followUpDraft;
-    }
-
-    public String getFollowUpAction() {
-        return followUpAction;
-    }
-
-    public void setFollowUpAction(String followUpAction) {
-        this.followUpAction = followUpAction;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-    
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    
-    // 後方互換：古いJSPが getFutureRequestLabel() を呼んでも落ちないようにする
+    /**
+     * ★互換性のために追加：JSPがこれを呼んでも落ちないようにする
+     * futureRequest（カンマ区切り）→ 日本語ラベルを「、」で連結
+     */
     public String getFutureRequestLabel() {
         return getFutureRequestLabelString();
     }
 
-
-    // ====== 画面表示用の「日本語ラベル」getter ======
-
-    /**
-     * reportedExists（コード） -> 日本語ラベル
-     */
-    public String getReportedExistsLabel() {
-        if (reportedExists == null || reportedExists.isEmpty()) {
-            return "";
-        }
-        switch (reportedExists) {
-            case "NONE":
-                return "まだ誰にも相談していない";
-            case "SOMEONE":
-                return "すでに誰かに相談している";
-            default:
-                return reportedExists; // 不明なコードはそのまま表示
-        }
-    }
-
-    /**
-     * sharePermission（コード） -> 日本語ラベル
-     */
-    public String getSharePermissionLabel() {
-        if (sharePermission == null || sharePermission.isEmpty()) {
-            return "";
-        }
-        switch (sharePermission) {
-            case "ALL_OK":
-                return "必要に応じて関係者に共有してよい";
-            case "LIMITED":
-                return "共有範囲を限定してほしい";
-            case "NO_SHARE":
-                return "相談内容は共有してほしくない";
-            default:
-                return sharePermission;
-        }
-    }
-
-    /**
-     * futureRequest（カンマ区切りコード列） -> 日本語ラベルのリスト
-     *
-     * 例: "LISTEN,WORK_CHANGE"
-     *   -> ["話を聞いてほしい", "配置転換・業務内容を調整してほしい"]
-     */
     public List<String> getFutureRequestLabelList() {
         List<String> result = new ArrayList<>();
-        if (futureRequest == null || futureRequest.trim().isEmpty()) {
-            return result;
-        }
+        if (futureRequest == null || futureRequest.trim().isEmpty()) return result;
 
         List<String> codes = Arrays.stream(futureRequest.split(","))
-                                   .map(String::trim)
-                                   .filter(s -> !s.isEmpty())
-                                   .collect(Collectors.toList());
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
 
         for (String code : codes) {
             switch (code) {
-                case "LISTEN":
-                    result.add("まず話を聞いてほしい");
+                case "LISTEN_ONLY":
+                    result.add("相談したかっただけ（まず話を聞いてほしい）");
+                    break;
+                case "WAIT":
+                    result.add("様子を見たい");
+                    break;
+                case "FACT_CHECK":
+                    result.add("事実確認してほしい");
+                    break;
+                case "WARN":
+                    result.add("行為者に注意してほしい");
                     break;
                 case "WORK_CHANGE":
-                    // ★ ここを日本語に修正（ご要望の箇所）
-                    result.add("配置転換・業務内容を調整してほしい");
+                    result.add("担当変更等、今後の業務について相談したい（配置転換など）");
+                    break;
+                case "OTHER":
+                    result.add("その他");
+                    break;
+
+                // 旧コード互換
+                case "LISTEN":
+                    result.add("まず話を聞いてほしい");
                     break;
                 case "ENV_IMPROVE":
                     result.add("職場環境や人間関係を改善してほしい");
@@ -273,11 +169,8 @@ public class Consultation {
                 case "MENTAL_SUPPORT":
                     result.add("産業医・カウンセラーなど専門家につなげてほしい");
                     break;
-                case "OTHER":
-                    result.add("その他の希望");
-                    break;
+
                 default:
-                    // 想定外のコードはそのまま出す
                     result.add(code);
                     break;
             }
@@ -285,34 +178,39 @@ public class Consultation {
         return result;
     }
 
-    /**
-     * futureRequest の日本語ラベルを「、」区切りで 1 つの文字列にまとめたもの
-     * 画面に 1 行で表示したいとき用。
-     */
     public String getFutureRequestLabelString() {
         List<String> labels = getFutureRequestLabelList();
-        if (labels.isEmpty()) {
-            return "";
-        }
+        if (labels.isEmpty()) return "";
         return String.join("、", labels);
     }
 
-    /**
-     * メンタルスケールの簡易ラベル
-     * 例: 8 -> "8（かなりつらい）"
-     */
     public String getMentalScaleLabel() {
-        if (mentalScale <= 0) {
+        if (mentalScale <= 0) return "";
+        if (mentalScale >= 9) return mentalScale + "（非常につらい）";
+        if (mentalScale >= 7) return mentalScale + "（かなりつらい）";
+        if (mentalScale >= 4) return mentalScale + "（ややつらい）";
+        return mentalScale + "（比較的落ち着いている）";
+    }
+
+    /**
+     * status（コード） -> 日本語ラベル
+     * NEW / CHECKING / IN_PROGRESS / DONE を想定
+     */
+    public String getStatusLabel() {
+        if (status == null || status.isEmpty()) {
             return "";
         }
-        if (mentalScale >= 9) {
-            return mentalScale + "（非常につらい）";
-        } else if (mentalScale >= 7) {
-            return mentalScale + "（かなりつらい）";
-        } else if (mentalScale >= 4) {
-            return mentalScale + "（ややつらい）";
-        } else {
-            return mentalScale + "（比較的落ち着いている）";
+        switch (status) {
+            case "NEW":
+                return "未対応";
+            case "CHECKING":
+                return "確認済";
+            case "IN_PROGRESS":
+                return "対応中";
+            case "DONE":
+                return "対応完了";
+            default:
+                return status;
         }
     }
 }
