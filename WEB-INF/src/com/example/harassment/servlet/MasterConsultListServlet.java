@@ -6,37 +6,29 @@ import com.example.harassment.repository.MemoryConsultationRepository;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MasterConsultListServlet extends HttpServlet {
-
-    private static final MemoryConsultationRepository repository =
-            new MemoryConsultationRepository();
+    private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
 
     @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        if (session == null || !"MASTER".equals(session.getAttribute("loginRole"))) {
+        if (!LoginUtil.isMaster(session)) {
             response.sendRedirect(request.getContextPath() + "/master/login");
             return;
         }
 
-        List<Consultation> all = repository.findAll();
-        List<Consultation> confirmed = new ArrayList<>();
+        String nameLike = request.getParameter("name");
+        String from = request.getParameter("from");
+        String to = request.getParameter("to");
+        String sort = request.getParameter("sort");
 
-        for (Consultation c : all) {
-            if (c.getFollowUpAction() != null && !c.getFollowUpAction().isEmpty()) {
-                confirmed.add(c);
-            }
-        }
+        List<Consultation> list = repo.search(nameLike, from, to, sort);
+        request.setAttribute("list", list);
 
-        request.setAttribute("consultations", confirmed);
-
-        request.getRequestDispatcher("/master/consult_list.jsp")
-               .forward(request, response);
+        request.getRequestDispatcher("/master/list.jsp").forward(request, response);
     }
 }

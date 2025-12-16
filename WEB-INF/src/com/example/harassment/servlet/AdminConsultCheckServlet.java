@@ -1,41 +1,29 @@
 package com.example.harassment.servlet;
 
-import com.example.harassment.model.Consultation;
 import com.example.harassment.repository.MemoryConsultationRepository;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
 
 public class AdminConsultCheckServlet extends HttpServlet {
-
-    private static final MemoryConsultationRepository repository =
-            new MemoryConsultationRepository();
+    private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
 
     @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
 
         HttpSession session = request.getSession(false);
-        if (session == null || !"ADMIN".equals(session.getAttribute("loginRole"))) {
+        if (!LoginUtil.isAdmin(session)) {
             response.sendRedirect(request.getContextPath() + "/admin/login");
             return;
         }
 
-        String idStr = request.getParameter("id");
-        if (idStr != null && !idStr.isEmpty()) {
-            try {
-                int id = Integer.parseInt(idStr);
-                Consultation c = repository.findById(id);
-                if (c != null) {
-                    c.setAdminChecked(true);
-                    repository.save(c);
-                }
-            } catch (NumberFormatException ignored) {
-            }
-        }
+        int id = 0;
+        try { id = Integer.parseInt(request.getParameter("id")); } catch (Exception ignored) {}
+        boolean checked = "true".equals(request.getParameter("checked"));
 
-        response.sendRedirect(request.getContextPath() + "/admin/consult/list");
+        repo.setAdminChecked(id, checked);
+
+        response.sendRedirect(request.getContextPath() + "/admin/consult/detail?id=" + id);
     }
 }

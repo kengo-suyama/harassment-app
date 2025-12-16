@@ -10,7 +10,8 @@ import java.io.IOException;
 public class MasterConsultFollowupViewServlet extends HttpServlet {
 
     private static final MemoryConsultationRepository repository =
-            new MemoryConsultationRepository();
+        MemoryConsultationRepository.getInstance();
+
 
     @Override
     protected void doGet(HttpServletRequest request,

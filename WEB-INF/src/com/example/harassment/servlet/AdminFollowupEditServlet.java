@@ -8,36 +8,24 @@ import javax.servlet.http.*;
 import java.io.IOException;
 
 public class AdminFollowupEditServlet extends HttpServlet {
-
-    private static final MemoryConsultationRepository repository =
-            new MemoryConsultationRepository();
+    private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
 
     @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        if (session == null || !"ADMIN".equals(session.getAttribute("loginRole"))) {
+        if (!LoginUtil.isAdmin(session)) {
             response.sendRedirect(request.getContextPath() + "/admin/login");
             return;
         }
 
-        String idStr = request.getParameter("id");
-        if (idStr == null || idStr.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/admin/consult/list");
-            return;
-        }
+        int id = 0;
+        try { id = Integer.parseInt(request.getParameter("id")); } catch (Exception ignored) {}
 
-        int id = Integer.parseInt(idStr);
-        Consultation c = repository.findById(id);
-        if (c == null) {
-            response.sendRedirect(request.getContextPath() + "/admin/consult/list");
-            return;
-        }
-
+        Consultation c = repo.findById(id);
         request.setAttribute("consultation", c);
-        request.getRequestDispatcher("/admin/followup_edit.jsp")
-               .forward(request, response);
+
+        request.getRequestDispatcher("/admin/followup_edit.jsp").forward(request, response);
     }
 }

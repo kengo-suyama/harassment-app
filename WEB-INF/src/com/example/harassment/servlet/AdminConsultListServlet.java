@@ -9,25 +9,26 @@ import java.io.IOException;
 import java.util.List;
 
 public class AdminConsultListServlet extends HttpServlet {
-
-    private static final MemoryConsultationRepository repository =
-            new MemoryConsultationRepository();
+    private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
 
     @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        if (session == null || !"ADMIN".equals(session.getAttribute("loginRole"))) {
+        if (!LoginUtil.isAdmin(session)) {
             response.sendRedirect(request.getContextPath() + "/admin/login");
             return;
         }
 
-        List<Consultation> consultations = repository.findAll();
-        request.setAttribute("consultations", consultations);
+        String nameLike = request.getParameter("name");
+        String from = request.getParameter("from");
+        String to = request.getParameter("to");
+        String sort = request.getParameter("sort");
 
-        request.getRequestDispatcher("/admin/consult_list.jsp")
-               .forward(request, response);
+        List<Consultation> list = repo.search(nameLike, from, to, sort);
+        request.setAttribute("list", list);
+
+        request.getRequestDispatcher("/admin/list.jsp").forward(request, response);
     }
 }

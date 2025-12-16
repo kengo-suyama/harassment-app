@@ -2,58 +2,35 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>管理者ログイン</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>管理者ログイン</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+<div class="container mt-5" style="max-width:520px;">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h1 class="h5 mb-3">管理者ログイン</h1>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
+      <%
+        String errorMessage = (String) request.getAttribute("errorMessage");
+        if (errorMessage != null && !errorMessage.isEmpty()) {
+      %>
+        <div class="alert alert-danger"><%= errorMessage %></div>
+      <%
+        }
+      %>
 
-                    <h1 class="h5 mb-3">管理者ログイン</h1>
+      <form method="post" action="<%= request.getContextPath() %>/admin/login">
+        <label class="form-label">パスワード</label>
+        <input class="form-control mb-3" type="password" name="password" placeholder="admin">
+        <button class="btn btn-dark w-100" type="submit">ログイン</button>
+      </form>
 
-                    <% 
-                        String error = (String) request.getAttribute("loginError"); 
-                    %>
-                    <% if (error != null) { %>
-                        <div class="alert alert-danger"><%= error %></div>
-                    <% } %>
-
-                    <form action="<%= request.getContextPath() %>/admin/login" method="post">
-                        <div class="mb-3">
-                            <label class="form-label">ユーザー名</label>
-                            <input type="text" name="username" class="form-control" value="admin">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">パスワード</label>
-                            <input type="password" name="password" class="form-control" value="admin1234">
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
-                                ログイン
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="mt-3">
-                        <a href="<%= request.getContextPath() %>/" class="small">トップに戻る</a>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+      <a class="btn btn-outline-secondary w-100 mt-2" href="<%= request.getContextPath() %>/">トップへ</a>
     </div>
+  </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
