@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.example.harassment.model.Consultation" %>
+<%@ page import="com.example.harassment.model.ChatMessage" %>
 <%
   List<Consultation> list = (List<Consultation>) request.getAttribute("list");
 %>
@@ -73,11 +74,21 @@
           <%
             } else {
               for (Consultation c : list) {
+                boolean hasNew = false;
+                if (c.getChatMessages() != null && !c.getChatMessages().isEmpty()) {
+                  ChatMessage last = c.getChatMessages().get(c.getChatMessages().size() - 1);
+                  hasNew = "REPORTER".equals(last.getSenderRole());
+                }
           %>
             <tr>
               <td><%= c.getId() %></td>
               <td><%= c.getSheetDate() %></td>
-              <td><%= (c.getConsultantName()==null||c.getConsultantName().isEmpty())?"（未記入）":c.getConsultantName() %></td>
+              <td>
+                <%= (c.getConsultantName()==null||c.getConsultantName().isEmpty())?"（未記入）":c.getConsultantName() %>
+                <% if (hasNew) { %>
+                  <span class="badge bg-warning text-dark ms-1">新着</span>
+                <% } %>
+              </td>
               <td><%= c.getStatusLabel() %></td>
               <td><%= c.getMentalScaleLabel() %></td>
               <td>

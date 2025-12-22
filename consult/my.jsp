@@ -58,12 +58,22 @@
     </div>
 
     <div class="col-lg-7">
+      <%
+        List<ChatMessage> msgs = c.getChatMessages();
+        boolean hasNew = false;
+        if (msgs != null && !msgs.isEmpty()) {
+          ChatMessage last = msgs.get(msgs.size() - 1);
+          hasNew = !"REPORTER".equals(last.getSenderRole());
+        }
+      %>
       <div class="card shadow-sm mb-3">
         <div class="card-body">
-          <h2 class="h6 mb-3">チャット</h2>
+          <h2 class="h6 mb-3">
+            チャット
+            <% if (hasNew) { %><span class="badge bg-warning text-dark ms-2">新着</span><% } %>
+          </h2>
 
           <%
-            List<ChatMessage> msgs = c.getChatMessages();
             if (msgs == null || msgs.isEmpty()) {
           %>
             <div class="text-muted">まだメッセージはありません。</div>

@@ -12,6 +12,9 @@
   <div class="card shadow-sm">
     <div class="card-body">
       <h1 class="h5 mb-3">マスターログイン</h1>
+      <p class="text-muted small mb-4">
+        マスター権限で相談一覧・詳細を閲覧するためのログインです。
+      </p>
 
       <%
         String errorMessage = (String) request.getAttribute("errorMessage");

@@ -3,6 +3,7 @@ package com.example.harassment.repository;
 import com.example.harassment.model.ChatMessage;
 import com.example.harassment.model.Consultation;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,17 +12,17 @@ import java.util.stream.Collectors;
 /**
  * メモリ上で相談データを保持する簡易リポジトリ
  * - Singleton（getInstance）
- * - 相談登録時に accessKey を自動発行
+ * - 相談登録時に accessKey を自動発行（衝突チェックあり）
  * - チャット appendChat / addChat
  * - 評価 saveEvaluation / updateEvaluation
  * - ステータス更新 setStatus / updateStatus
  * - 検索 search（氏名部分一致 / 日付FROM-TO / ソート）
+ * - clearAll（全件削除：必要な場合のみ使用）
  */
 public class MemoryConsultationRepository {
 
     // ===== Singleton =====
     private static final MemoryConsultationRepository INSTANCE = new MemoryConsultationRepository();
-
     public static MemoryConsultationRepository getInstance() {
         return INSTANCE;
     }
@@ -29,6 +30,11 @@ public class MemoryConsultationRepository {
     // ===== データ保持 =====
     private final Map<Integer, Consultation> store = new LinkedHashMap<>();
     private final AtomicInteger seq = new AtomicInteger(1);
+
+    // accessKey生成用（衝突しにくい）
+    private static final String KEY_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+    private static final int KEY_LEN = 16;
+    private final SecureRandom random = new SecureRandom();
 
     private MemoryConsultationRepository() {}
 
@@ -44,13 +50,15 @@ public class MemoryConsultationRepository {
             c.setId(seq.getAndIncrement());
         }
 
-        if (c.getAccessKey() == null || c.getAccessKey().trim().isEmpty()) {
-            c.setAccessKey(generateKey());
+        if (isBlank(c.getAccessKey())) {
+            c.setAccessKey(generateUniqueKey());
         }
 
         // status未指定なら NEW
-        if (c.getStatus() == null || c.getStatus().trim().isEmpty()) {
+        if (isBlank(c.getStatus())) {
             c.setStatus("NEW");
+        } else {
+            c.setStatus(normStatus(c.getStatus()));
         }
 
         // chatMessages null対策
@@ -68,6 +76,30 @@ public class MemoryConsultationRepository {
     public synchronized void update(Consultation c) {
         if (c == null) return;
         if (c.getId() <= 0) return;
+
+        // 既存がなければ save と同等に扱う（落ちない優先）
+        if (!store.containsKey(c.getId())) {
+            save(c);
+            return;
+        }
+
+        // status正規化
+        if (!isBlank(c.getStatus())) {
+            c.setStatus(normStatus(c.getStatus()));
+        } else {
+            c.setStatus("NEW");
+        }
+
+        // chatMessages null対策
+        if (c.getChatMessages() == null) {
+            c.setChatMessages(new ArrayList<>());
+        }
+
+        // accessKey空なら付与
+        if (isBlank(c.getAccessKey())) {
+            c.setAccessKey(generateUniqueKey());
+        }
+
         store.put(c.getId(), c);
     }
 
@@ -101,7 +133,7 @@ public class MemoryConsultationRepository {
         if (c == null) return null;
         if (c.getAccessKey() == null) return null;
 
-        String k = (key != null) ? key.trim() : "";
+        String k = safe(key);
         return c.getAccessKey().equals(k) ? c : null;
     }
 
@@ -138,7 +170,7 @@ public class MemoryConsultationRepository {
 
         if ("final".equalsIgnoreCase(mode)) {
             c.setFollowUpAction(t);
-            // 確定したら対応中→完了など運用次第。ここでは確定で「対応中」に倒す
+            // 確定したら運用上「対応中」へ（DONEなら維持）
             if (!"DONE".equals(c.getStatus())) {
                 c.setStatus("IN_PROGRESS");
             }
@@ -147,17 +179,41 @@ public class MemoryConsultationRepository {
         }
     }
 
+    /**
+     * 互換：複数回の対応記録を「追記」する簡易版（止血実装）
+     * actorRole: "ADMIN" など
+     * category : "1st", "2nd", "産業医" 等（自由）
+     */
+    public synchronized void addFollowUp(int id, String actorRole, String category, String text) {
+        Consultation c = store.get(id);
+        if (c == null) return;
+
+        String t = safe(text);
+        if (t.isEmpty()) return;
+
+        String header = "【" + normRole(actorRole) + " / " + safe(category) + " / "
+                + LocalDateTime.now().toString().replace('T', ' ') + "】\n";
+
+        String current = c.getFollowUpDraft();
+        if (current == null) current = "";
+
+        c.setFollowUpDraft(current + (current.isEmpty() ? "" : "\n\n") + header + t);
+
+        if (!"DONE".equals(c.getStatus())) {
+            c.setStatus("IN_PROGRESS");
+        }
+    }
+
     // ===== チャット =====
 
     /**
-     * JSP/Servlet側が repo.appendChat を呼ぶ想定に合わせる
      * senderRole: "ADMIN" / "MASTER" / "REPORTER"
      */
     public synchronized void appendChat(int id, String senderRole, String message) {
         Consultation c = store.get(id);
         if (c == null) return;
 
-        String msg = (message != null) ? message.trim() : "";
+        String msg = safe(message);
         if (msg.isEmpty()) return;
 
         if (c.getChatMessages() == null) {
@@ -196,8 +252,8 @@ public class MemoryConsultationRepository {
         c.setReporterFeedback(feedback != null ? feedback : "");
         c.setReporterRatedAt(LocalDateTime.now());
 
-        // 評価が入るのは基本 DONE 後なので、未DONEならDONEへ寄せる（運用に合わせて）
-        if (c.getStatus() == null || c.getStatus().trim().isEmpty()) {
+        // 運用：評価が入るなら完了寄せ（必要なければここは消してOK）
+        if (isBlank(c.getStatus())) {
             c.setStatus("DONE");
         }
     }
@@ -212,24 +268,20 @@ public class MemoryConsultationRepository {
     // ===== 一覧検索（管理/マスター共通） =====
     // nameLike: 氏名部分一致（空なら無条件）
     // from/to : sheetDate 文字列比較（YYYY-MM-DD 想定、空なら無視）
-    // sort    : "mental_desc" を想定（しんどさ高い順）
+    // sort    : "mental_desc" / "id_desc" / default(id_asc)
     public synchronized List<Consultation> search(String nameLike, String from, String to, String sort) {
 
-        String n = (nameLike != null) ? nameLike.trim() : "";
-        String f = (from != null) ? from.trim() : "";
-        String t = (to != null) ? to.trim() : "";
-        String s = (sort != null) ? sort.trim() : "";
+        String n = safe(nameLike);
+        String f = safe(from);
+        String t = safe(to);
+        String s = safe(sort);
 
         List<Consultation> list = new ArrayList<>(store.values());
 
         // 氏名部分一致
         if (!n.isEmpty()) {
             list = list.stream()
-                    .filter(c -> {
-                        String name = c.getConsultantName();
-                        if (name == null) name = "";
-                        return name.contains(n);
-                    })
+                    .filter(c -> safe(c.getConsultantName()).contains(n))
                     .collect(Collectors.toList());
         }
 
@@ -254,28 +306,36 @@ public class MemoryConsultationRepository {
         }
 
         // ソート
-        if ("mental_desc".equalsIgnoreCase(s) || "MENTAL_DESC".equalsIgnoreCase(s)) {
+        if ("mental_desc".equalsIgnoreCase(s)) {
             list.sort(Comparator.comparingInt(Consultation::getMentalScale).reversed());
         } else if ("id_desc".equalsIgnoreCase(s)) {
             list.sort(Comparator.comparingInt(Consultation::getId).reversed());
         } else {
-            // デフォルト：ID昇順（登録順）
-            list.sort(Comparator.comparingInt(Consultation::getId));
+            list.sort(Comparator.comparingInt(Consultation::getId)); // デフォルト：ID昇順
         }
 
         return list;
     }
 
+    // ===== 便利：全件クリア（必要なら） =====
+    public synchronized void clearAll() {
+        store.clear();
+        seq.set(1);
+    }
+
     // ===== ユーティリティ =====
 
     private String safe(String s) {
-        return s == null ? "" : s.trim();
+        return (s == null) ? "" : s.trim();
+    }
+
+    private boolean isBlank(String s) {
+        return safe(s).isEmpty();
     }
 
     private String normRole(String role) {
         String r = safe(role).toUpperCase();
         if (r.equals("ADMIN") || r.equals("MASTER") || r.equals("REPORTER")) return r;
-        // それ以外は REPORTER 扱いに寄せる（落ちないのが最優先）
         return "REPORTER";
     }
 
@@ -288,49 +348,27 @@ public class MemoryConsultationRepository {
             case "DONE":
                 return st;
             default:
-                // 変な値でもnullにしない（JSPラベル表示で困らないように）
-                return st.isEmpty() ? "NEW" : st;
+                return st.isEmpty() ? "NEW" : st; // 変な値でもnullにしない
         }
     }
 
-    private String generateKey() {
-        // 相談者のマイページアクセス用の簡易キー（推測されにくい長さ）
-        String chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
-        Random r = new Random();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            sb.append(chars.charAt(r.nextInt(chars.length())));
+    private String generateUniqueKey() {
+        // 念のため衝突チェック（メモリ上なので軽い）
+        for (int tries = 0; tries < 1000; tries++) {
+            String k = generateKeyOnce();
+            boolean exists = store.values().stream()
+                    .anyMatch(c -> k.equals(c.getAccessKey()));
+            if (!exists) return k;
+        }
+        // ここに来ることはほぼないが、最悪UUIDで逃げる
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    private String generateKeyOnce() {
+        StringBuilder sb = new StringBuilder(KEY_LEN);
+        for (int i = 0; i < KEY_LEN; i++) {
+            sb.append(KEY_CHARS.charAt(random.nextInt(KEY_CHARS.length())));
         }
         return sb.toString();
     }
-        /**
-     * 互換：複数回の対応記録を「追記」する簡易版。
-     * 本格的に FollowUpRecord を持たせる前の "止血" 実装。
-     *
-     * actorRole: "ADMIN" など
-     * category : "1st", "2nd", "産業医" 等（自由）
-     * text     : 本文
-     */
-        public synchronized void addFollowUp(int id, String actorRole, String category, String text) {
-            Consultation c = store.get(id);
-            if (c == null) return;
-    
-            String t = (text != null) ? text.trim() : "";
-            if (t.isEmpty()) return;
-    
-            String header = "【" + normRole(actorRole) + " / " + safe(category) + " / " +
-                    LocalDateTime.now().toString().replace('T', ' ') + "】\n";
-    
-            String current = c.getFollowUpDraft();
-            if (current == null) current = "";
-    
-            // 下書き欄へ追記（履歴の代用）
-            c.setFollowUpDraft(current + (current.isEmpty() ? "" : "\n\n") + header + t);
-    
-            // 1件でも対応が入ったら対応中に寄せる
-            if (!"DONE".equals(c.getStatus())) {
-                c.setStatus("IN_PROGRESS");
-            }
-        }
-    
 }

@@ -70,7 +70,11 @@
 
     </div>
   </div>
-
+  <a href="<%= request.getContextPath() %>/master/consult/list"
+    class="btn btn-outline-secondary">
+   一覧へ戻る
+ </a>
+ 
   <% } %>
 </div>
 </body>

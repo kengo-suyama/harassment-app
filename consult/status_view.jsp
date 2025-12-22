@@ -52,20 +52,31 @@
   <!-- チャット -->
   <div class="card shadow-sm mb-4">
     <div class="card-body">
-      <h2 class="h6">連絡（簡易チャット）</h2>
+      <%
+        java.util.List<ChatMessage> msgs = c.getChatMessages();
+        boolean hasNew = false;
+        if (msgs != null && !msgs.isEmpty()) {
+          ChatMessage last = msgs.get(msgs.size() - 1);
+          hasNew = !"REPORTER".equals(last.getSenderRole());
+        }
+      %>
+      <h2 class="h6">
+        連絡（簡易チャット）
+        <% if (hasNew) { %><span class="badge bg-warning text-dark ms-2">新着</span><% } %>
+      </h2>
 
       <div class="border rounded p-2 mb-3 bg-white" style="max-height: 320px; overflow:auto;">
         <%
-          if (c.getChatMessages() == null || c.getChatMessages().isEmpty()) {
+          if (msgs == null || msgs.isEmpty()) {
         %>
           <div class="text-muted small">まだメッセージはありません。</div>
         <%
           } else {
-            for (ChatMessage m : c.getChatMessages()) {
+            for (ChatMessage m : msgs) {
         %>
           <div class="mb-2">
-            <div class="small text-muted"><%= m.getAt() %> / <%= m.getSenderRoleLabel() %></div>
-            <div class="bg-light rounded p-2"><%= m.getText() %></div>
+            <div class="small text-muted"><%= m.getSenderRoleLabel() %><% if (m.getSentAt() != null) { %> / <%= m.getSentAt().toString().replace('T',' ') %><% } %></div>
+            <div class="bg-light rounded p-2"><%= m.getMessage() %></div>
           </div>
         <%
             }
@@ -78,7 +89,7 @@
         <input type="hidden" name="key" value="<%= c.getLookupKey() %>">
 
         <div class="mb-2">
-          <textarea name="text" class="form-control" rows="3" placeholder="確認したいこと、面談希望日時など"></textarea>
+          <textarea name="message" class="form-control" rows="3" placeholder="確認したいこと、面談希望日時など"></textarea>
         </div>
         <button class="btn btn-primary" type="submit">送信</button>
         <a class="btn btn-outline-secondary ms-2" href="<%= request.getContextPath() %>/consult/status">別の受付番号で確認</a>

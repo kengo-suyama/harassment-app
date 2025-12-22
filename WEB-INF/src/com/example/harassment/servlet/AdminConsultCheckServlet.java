@@ -2,28 +2,37 @@ package com.example.harassment.servlet;
 
 import com.example.harassment.repository.MemoryConsultationRepository;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
 
 public class AdminConsultCheckServlet extends HttpServlet {
-    private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
+
+    private static final MemoryConsultationRepository repo =
+            MemoryConsultationRepository.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+            throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
-        if (!LoginUtil.isAdmin(session)) {
-            response.sendRedirect(request.getContextPath() + "/admin/login");
-            return;
+        request.setCharacterEncoding("UTF-8");
+
+        String idStr = request.getParameter("id");
+        int id = 0;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (Exception ignored) {}
+
+        if (id > 0) {
+            repo.setAdminChecked(id, true);
         }
 
-        int id = 0;
-        try { id = Integer.parseInt(request.getParameter("id")); } catch (Exception ignored) {}
-        boolean checked = "true".equals(request.getParameter("checked"));
+        response.sendRedirect(request.getContextPath() + "/admin/consult/list");
+    }
 
-        repo.setAdminChecked(id, checked);
-
-        response.sendRedirect(request.getContextPath() + "/admin/consult/detail?id=" + id);
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(request.getContextPath() + "/admin/consult/list");
     }
 }

@@ -6,7 +6,6 @@ import java.io.IOException;
 
 public class AdminLoginServlet extends HttpServlet {
 
-    // デモ用（必要なら後でDB化）
     private static final String ADMIN_PASS = "admin";
 
     @Override
@@ -20,6 +19,7 @@ public class AdminLoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+
         String pass = request.getParameter("password");
 
         if (ADMIN_PASS.equals(pass)) {

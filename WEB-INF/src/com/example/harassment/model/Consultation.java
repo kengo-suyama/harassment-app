@@ -17,6 +17,7 @@ public class Consultation {
     // ====== 相談シートの主な項目 ======
     private String sheetDate;                // シート記入日（文字列でOK）
     private String consultantName;           // 相談者氏名（任意）
+    private String contactEmail;            // Email (optional)
     private String summary;                  // 相談の概要
 
     // 発生後の状況
@@ -75,6 +76,9 @@ public class Consultation {
     public String getConsultantName() { return consultantName; }
     public void setConsultantName(String consultantName) { this.consultantName = consultantName; }
 
+    public String getContactEmail() { return contactEmail; }
+    public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
+
     public String getSummary() { return summary; }
     public void setSummary(String summary) { this.summary = summary; }
 
@@ -124,6 +128,9 @@ public class Consultation {
 
     public String getAccessKey() { return accessKey; }
     public void setAccessKey(String accessKey) { this.accessKey = accessKey; }
+
+    // JSP compatibility
+    public String getLookupKey() { return accessKey; }
 
     // ====== JSPが呼んでいる名前に合わせた getter 群 ======
 

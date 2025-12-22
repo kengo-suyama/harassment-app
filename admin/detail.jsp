@@ -135,7 +135,11 @@
         </div>
       </div>
     </div>
-
+    <a href="<%= request.getContextPath() %>/admin/consult/list"
+        class="btn btn-outline-secondary">
+       一覧へ戻る
+     </a>
+     
   </div>
 
   <% } %>

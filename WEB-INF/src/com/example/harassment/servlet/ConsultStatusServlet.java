@@ -23,8 +23,25 @@ public class ConsultStatusServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-        request.getRequestDispatcher("/consult/status.jsp")
-                .forward(request, response);
+        String idStr = request.getParameter("id");
+        String key = request.getParameter("key");
+
+        if (!isBlank(idStr) && !isBlank(key)) {
+            int id = 0;
+            try { id = Integer.parseInt(idStr); } catch (Exception e) { /* ignore */ }
+            Consultation c = repository.findByIdAndKey(id, key.trim());
+            if (c == null) {
+                request.setAttribute("errorMessage", "受付番号または照合キーが一致しませんでした。");
+                request.getRequestDispatcher("/consult/status.jsp").forward(request, response);
+                return;
+            }
+            request.setAttribute("consultation", c);
+            request.getRequestDispatcher("/consult/status_view.jsp")
+                    .forward(request, response);
+            return;
+        }
+
+        request.getRequestDispatcher("/consult/status.jsp").forward(request, response);
     }
 
     @Override
@@ -50,5 +67,9 @@ public class ConsultStatusServlet extends HttpServlet {
         request.setAttribute("consultation", c);
         request.getRequestDispatcher("/consult/status_view.jsp")
                 .forward(request, response);
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

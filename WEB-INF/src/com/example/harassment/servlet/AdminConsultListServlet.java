@@ -1,34 +1,34 @@
 package com.example.harassment.servlet;
 
-import com.example.harassment.model.Consultation;
 import com.example.harassment.repository.MemoryConsultationRepository;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
-import java.util.List;
 
 public class AdminConsultListServlet extends HttpServlet {
+
     private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
+
+    private boolean isAdmin(HttpServletRequest request) {
+        HttpSession s = request.getSession(false);
+        return s != null && "ADMIN".equals(String.valueOf(s.getAttribute("loginRole")));
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
-        if (!LoginUtil.isAdmin(session)) {
+        request.setCharacterEncoding("UTF-8");
+
+        if (!isAdmin(request)) {
             response.sendRedirect(request.getContextPath() + "/admin/login");
             return;
         }
 
-        String nameLike = request.getParameter("name");
-        String from = request.getParameter("from");
-        String to = request.getParameter("to");
-        String sort = request.getParameter("sort");
+        // ★repo側に findAll() がある想定（無い場合はあなたのrepoメソッド名に合わせてください）
+        request.setAttribute("consultations", repo.findAll());
 
-        List<Consultation> list = repo.search(nameLike, from, to, sort);
-        request.setAttribute("list", list);
-
-        request.getRequestDispatcher("/admin/list.jsp").forward(request, response);
+        request.getRequestDispatcher("/admin/consult/list.jsp").forward(request, response);
     }
 }

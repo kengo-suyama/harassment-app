@@ -1,0 +1,11 @@
+﻿# Build outputs (do not commit)
+WEB-INF/classes/
+*.class
+
+# Logs
+*.log
+*.err
+
+# OS junk
+Thumbs.db
+.DS_Store
