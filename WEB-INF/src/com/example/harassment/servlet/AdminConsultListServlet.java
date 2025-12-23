@@ -27,8 +27,17 @@ public class AdminConsultListServlet extends HttpServlet {
             return;
         }
 
-        // ★repo側に findAll() がある想定（無い場合はあなたのrepoメソッド名に合わせてください）
-        request.setAttribute("consultations", repo.findAll());
+        String sort = request.getParameter("sort");
+        String sortKey = "id_desc";
+        if ("oldest".equals(sort)) {
+            sortKey = "id_asc";
+        } else if ("mental_desc".equals(sort)) {
+            sortKey = "mental_desc";
+        } else if ("unconfirmed".equals(sort)) {
+            sortKey = "unconfirmed_first";
+        }
+
+        request.setAttribute("consultations", repo.search(null, null, null, sortKey));
 
         request.getRequestDispatcher("/admin/consult/list.jsp").forward(request, response);
     }

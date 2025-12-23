@@ -21,6 +21,18 @@
 </nav>
 
 <div class="container">
+  <%
+    String sort = request.getParameter("sort");
+    String sortLabel = "新しい順";
+    if ("oldest".equals(sort)) {
+      sortLabel = "古い順";
+    } else if ("mental_desc".equals(sort)) {
+      sortLabel = "しんどさ高い順";
+    } else if ("unconfirmed".equals(sort)) {
+      sortLabel = "未確認順";
+    }
+  %>
+
   <div class="card shadow-sm mb-3">
     <div class="card-body">
       <h1 class="h6">相談一覧（全権管理者）</h1>
@@ -37,16 +49,22 @@
         </div>
         <div class="col-md-3">
           <select class="form-select" name="sort">
-            <option value="">新しい順</option>
-            <option value="mental_desc" <%= "mental_desc".equals(request.getParameter("sort"))?"selected":"" %>>しんどさ高い順</option>
-            <option value="mental_asc" <%= "mental_asc".equals(request.getParameter("sort"))?"selected":"" %>>しんどさ低い順</option>
+            <option value="newest" <%= (sort == null || sort.isEmpty() || "newest".equals(sort)) ? "selected" : "" %>>新しい順</option>
+            <option value="oldest" <%= "oldest".equals(sort) ? "selected" : "" %>>古い順</option>
+            <option value="mental_desc" <%= "mental_desc".equals(sort) ? "selected" : "" %>>しんどさ高い順</option>
+            <option value="unconfirmed" <%= "unconfirmed".equals(sort) ? "selected" : "" %>>未確認順</option>
           </select>
         </div>
         <div class="col-md-2">
           <button class="btn btn-primary w-100" type="submit">検索</button>
         </div>
       </form>
+      <div class="small text-muted mt-2">現在の並び順：<%= sortLabel %></div>
     </div>
+  </div>
+
+  <div class="d-flex gap-2 mb-3">
+    <a class="btn btn-outline-primary" href="<%= request.getContextPath() %>/master/report">年間レポート</a>
   </div>
 
   <div class="card shadow-sm">

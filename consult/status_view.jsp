@@ -41,10 +41,12 @@
         <dd class="col-sm-8"><%= c.getId() %></dd>
 
         <dt class="col-sm-4">対応状況</dt>
-        <dd class="col-sm-8"><strong><%= c.getStatusLabel() %></strong></dd>
+        <dd class="col-sm-8">
+          <strong><%= (c.getStatusLabel() != null && !c.getStatusLabel().isEmpty()) ? c.getStatusLabel() : (c.getStatus() != null ? c.getStatus() : "") %></strong>
+        </dd>
 
         <dt class="col-sm-4">相談概要</dt>
-        <dd class="col-sm-8"><pre class="mb-0"><%= c.getSummary() %></pre></dd>
+        <dd class="col-sm-8"><pre class="mb-0"><%= c.getSummary() != null ? c.getSummary() : "" %></pre></dd>
       </dl>
     </div>
   </div>
@@ -74,7 +76,9 @@
         <%
           if (msgs == null || msgs.isEmpty()) {
         %>
-          <div class="text-muted small">まだメッセージはありません。</div>
+          <div class="p-3 text-center bg-light border rounded text-muted small">
+            まだメッセージはありません
+          </div>
         <%
           } else {
             for (ChatMessage m : msgs) {
@@ -111,7 +115,8 @@
     <div class="card-body">
       <h2 class="h6">今回の対応の評価（完了後）</h2>
       <p class="text-muted small mb-3">
-        入力した評価は管理者には共有されず、全権管理者のみが確認できます。
+        対応の最後に、今回の管理者の対応評価をお願いします。<br>
+        管理者は目を通さないのでご安心ください（全権管理者のみ確認します）。
       </p>
 
       <%
@@ -123,13 +128,19 @@
         </div>
       <%
         } else {
+          String error = request.getParameter("error");
+          if ("feedback".equals(error)) {
+      %>
+        <div class="alert alert-danger">評価と詳細を入力してください。</div>
+      <%
+          }
       %>
       <form method="post" action="<%= request.getContextPath() %>/consult/eval/submit">
         <input type="hidden" name="id" value="<%= c.getId() %>">
         <input type="hidden" name="token" value="<%= c.getLookupKey() %>">
 
         <div class="mb-2">
-          <label class="form-label">評価（1?5）</label>
+          <label class="form-label">評価（1-5）</label>
           <select name="rating" class="form-select" required>
             <option value="">選択してください</option>
             <option value="1">1（不満）</option>
@@ -141,11 +152,11 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">コメント（任意）</label>
-          <textarea name="feedback" class="form-control" rows="3"></textarea>
+          <label class="form-label">詳細（必須）</label>
+          <textarea name="feedback" class="form-control" rows="3" required></textarea>
         </div>
 
-        <button class="btn btn-success" type="submit">送信する</button>
+        <button class="btn btn-success" type="submit">アンケート送信</button>
       </form>
       <%
         }

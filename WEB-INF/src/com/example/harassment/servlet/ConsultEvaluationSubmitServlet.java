@@ -23,6 +23,7 @@ public class ConsultEvaluationSubmitServlet extends HttpServlet {
         int rating = 3;
         try { rating = Integer.parseInt(request.getParameter("rating")); } catch (Exception ignored) {}
 
+        String feedback = request.getParameter("feedback");
         if (token == null || token.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/consult/status");
             return;
@@ -34,7 +35,12 @@ public class ConsultEvaluationSubmitServlet extends HttpServlet {
             return;
         }
 
-        repo.saveEvaluation(id, rating, request.getParameter("feedback"));
+        if (feedback == null || feedback.trim().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/consult/status/" + token.trim() + "?error=feedback");
+            return;
+        }
+
+        repo.saveEvaluation(id, rating, feedback);
 
         if (token != null && !token.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/consult/status/" + token.trim());

@@ -1,7 +1,9 @@
 package com.example.harassment.servlet;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ConsultConfirmServlet extends HttpServlet {
@@ -12,12 +14,12 @@ public class ConsultConfirmServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        // 下書きを最新化（既にある想定）
+        // 下書きを最新化
         DraftUtil.saveDraftToSession(request);
 
         String summary = request.getParameter("summary");
         if (summary == null || summary.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "「相談内容の概要（※）」は必須です。");
+            request.setAttribute("errorMessage", "「相談内容の概要（※必須）」は必ず入力してください。");
             request.getRequestDispatcher("/consult/form.jsp").forward(request, response);
             return;
         }

@@ -29,7 +29,6 @@
 
         String sheetDate = request.getParameter("sheetDate");
         String consultantName = request.getParameter("consultantName");
-        String contactEmail = request.getParameter("contactEmail");
         String summary = request.getParameter("summary");
 
         String reportedExists = request.getParameter("reportedExists");
@@ -54,7 +53,7 @@
             if ("LISTEN_ONLY".equals(fr)) {
               futureRequestLabels.add("とりあえず話を聞いてほしい");
             } else if ("ADVISE".equals(fr)) {
-              futureRequestLabels.add("助言やアドバイスがほしい");
+              futureRequestLabels.add("助言・アドバイスがほしい");
             } else if ("ARRANGE_MEETING".equals(fr)) {
               futureRequestLabels.add("面談の場を調整してほしい");
             } else if ("KEEP_RECORD".equals(fr)) {
@@ -74,7 +73,7 @@
 
         String sharePermissionLabel = "";
         if ("ALL_OK".equals(sharePermission)) {
-          sharePermissionLabel = "必要と判断される関係者には共有してよい";
+          sharePermissionLabel = "必要に応じて関係者へ共有してよい";
         } else if ("LIMITED".equals(sharePermission)) {
           sharePermissionLabel = "共有する相手を限定してほしい";
         } else if ("NO_SHARE".equals(sharePermission)) {
@@ -87,16 +86,13 @@
           <h1 class="h5 mb-3">相談内容の確認</h1>
 
           <dl class="row mb-0">
-            <dt class="col-sm-3">シート記入日</dt>
+            <dt class="col-sm-3">シート記録日</dt>
             <dd class="col-sm-9"><%= sheetDate != null ? sheetDate : "" %></dd>
 
             <dt class="col-sm-3">相談者氏名</dt>
-            <dd class="col-sm-9"><%= (consultantName != null && !consultantName.isEmpty()) ? consultantName : "（未記入）" %></dd>
+            <dd class="col-sm-9"><%= consultantName != null ? consultantName : "" %></dd>
 
-            <dt class="col-sm-3">Email</dt>
-            <dd class="col-sm-9"><%= (contactEmail != null && !contactEmail.isEmpty()) ? contactEmail : "（未記入）" %></dd>
-
-            <dt class="col-sm-3">相談の概要</dt>
+            <dt class="col-sm-3">相談概要</dt>
             <dd class="col-sm-9">
               <pre class="mb-0"><%= summary != null ? summary : "" %></pre>
             </dd>
@@ -111,7 +107,7 @@
                   } else if ("NO".equals(reportedExists)) {
                     out.print("まだ誰にも相談していない");
                   } else {
-                    out.print("（未選択）");
+                    out.print("");
                   }
                 %>
               </p>
@@ -130,8 +126,7 @@
             <dt class="col-sm-3 mt-3">現在の心身の状態</dt>
             <dd class="col-sm-9 mt-3">
               <p class="mb-1">
-                しんどさ（1〜10）：
-                <%= (mentalScale != null && !mentalScale.isEmpty()) ? mentalScale : "（未記入）" %>
+                つらさ（1-10）：<%= (mentalScale != null && !mentalScale.isEmpty()) ? mentalScale : "" %>
               </p>
               <p class="mb-0">
                 詳細：
@@ -143,8 +138,7 @@
             <dt class="col-sm-3 mt-3">今後の希望</dt>
             <dd class="col-sm-9 mt-3">
               <p class="mb-1">
-                選択内容：
-                <%= !futureRequestLabelJoined.isEmpty() ? futureRequestLabelJoined : "（未選択）" %>
+                選択内容：<%= !futureRequestLabelJoined.isEmpty() ? futureRequestLabelJoined : "" %>
               </p>
               <p class="mb-0">
                 その他の希望：
@@ -153,20 +147,19 @@
               </p>
             </dd>
 
-            <dt class="col-sm-3 mt-3">情報の共有について</dt>
+            <dt class="col-sm-3 mt-3">情報共有</dt>
             <dd class="col-sm-9 mt-3">
-              <p class="mb-1">共有の希望：<%= !sharePermissionLabel.isEmpty() ? sharePermissionLabel : "（未選択）" %></p>
-              <p class="mb-0">共有してよい相手：<%= shareLimitedTargets != null ? shareLimitedTargets : "" %></p>
+              <p class="mb-1">共有希望：<%= !sharePermissionLabel.isEmpty() ? sharePermissionLabel : "" %></p>
+              <p class="mb-0">共有範囲：<%= shareLimitedTargets != null ? shareLimitedTargets : "" %></p>
             </dd>
           </dl>
         </div>
       </div>
 
-      <!-- 戻る -->
+      <!-- 戻って修正 -->
       <form method="post" action="<%= request.getContextPath() %>/consult/form">
         <input type="hidden" name="sheetDate" value="<%= sheetDate != null ? sheetDate : "" %>">
         <input type="hidden" name="consultantName" value="<%= consultantName != null ? consultantName : "" %>">
-        <input type="hidden" name="contactEmail" value="<%= contactEmail != null ? contactEmail : "" %>">
         <input type="hidden" name="summary" value="<%= summary != null ? summary : "" %>">
 
         <input type="hidden" name="reportedExists" value="<%= reportedExists != null ? reportedExists : "" %>">
@@ -202,7 +195,6 @@
       <form method="post" action="<%= request.getContextPath() %>/consult/submit">
         <input type="hidden" name="sheetDate" value="<%= sheetDate != null ? sheetDate : "" %>">
         <input type="hidden" name="consultantName" value="<%= consultantName != null ? consultantName : "" %>">
-        <input type="hidden" name="contactEmail" value="<%= contactEmail != null ? contactEmail : "" %>">
         <input type="hidden" name="summary" value="<%= summary != null ? summary : "" %>">
 
         <input type="hidden" name="reportedExists" value="<%= reportedExists != null ? reportedExists : "" %>">

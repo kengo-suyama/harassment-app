@@ -192,6 +192,16 @@
         <url-pattern>/master/chat/send</url-pattern>
     </servlet-mapping>
 
+    <!-- Master report -->
+    <servlet>
+        <servlet-name>MasterReportServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.MasterReportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MasterReportServlet</servlet-name>
+        <url-pattern>/master/report</url-pattern>
+    </servlet-mapping>
+
     <!-- Consult status -->
     <servlet>
         <servlet-name>ConsultStatusServlet</servlet-name>
@@ -304,6 +314,34 @@
     <servlet-mapping>
         <servlet-name>PasswordChangeServlet</servlet-name>
         <url-pattern>/password/change</url-pattern>
+    </servlet-mapping>
+
+    <!-- Admin password reset -->
+    <servlet>
+        <servlet-name>AdminPasswordResetServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.PasswordResetServlet</servlet-class>
+        <init-param>
+            <param-name>role</param-name>
+            <param-value>ADMIN</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminPasswordResetServlet</servlet-name>
+        <url-pattern>/admin/password/reset</url-pattern>
+    </servlet-mapping>
+
+    <!-- Master password reset -->
+    <servlet>
+        <servlet-name>MasterPasswordResetServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.PasswordResetServlet</servlet-class>
+        <init-param>
+            <param-name>role</param-name>
+            <param-value>MASTER</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MasterPasswordResetServlet</servlet-name>
+        <url-pattern>/master/password/reset</url-pattern>
     </servlet-mapping>
 
     <!-- DB test -->

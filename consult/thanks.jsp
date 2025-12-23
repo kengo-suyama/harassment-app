@@ -4,9 +4,6 @@
 <%
     String ctx = request.getContextPath();
     Consultation c = (Consultation) request.getAttribute("consultation");
-    String statusUrl = (String) request.getAttribute("statusUrl");
-    String mailtoUrl = (String) request.getAttribute("mailtoUrl");
-    String mailNotice = (String) request.getAttribute("mailNotice");
 %>
 
 <!DOCTYPE html>
@@ -34,61 +31,41 @@
         <div class="card-body">
           <h1 class="h4 mb-3">送信が完了しました</h1>
           <p class="mb-0">
-            ご相談内容を受け付けました。ありがとうございました。
+            ご相談内容を受け付けました。担当者が内容を確認して対応します。
           </p>
         </div>
       </div>
 
       <% if (c != null) { %>
         <div class="card shadow-sm">
-          <div class="card-header">受付内容（概要）</div>
+          <div class="card-header">入力内容（概要）</div>
           <div class="card-body">
             <div class="mb-2">
-              <div class="text-muted small">記入日</div>
+              <div class="text-muted small">相談日</div>
               <div><%= (c.getSheetDate() == null ? "" : c.getSheetDate()) %></div>
             </div>
             <div>
-              <div class="text-muted small">相談内容の概要</div>
+              <div class="text-muted small">相談概要</div>
               <div style="white-space: pre-wrap;"><%= (c.getSummary() == null ? "" : c.getSummary()) %></div>
             </div>
           </div>
         </div>
 
         <div class="card shadow-sm mt-3">
-          <div class="card-header">相談者専用ページ</div>
+          <div class="card-header">照合キー</div>
           <div class="card-body">
-            <p class="mb-2">以下のURLから相談状況を確認できます。メール等で保存してください。</p>
-            <div class="mb-2">
-              <div class="text-muted small">照合キー</div>
-              <div><strong><%= c.getAccessKey() %></strong></div>
+            <p class="mb-2 text-danger"><strong>必ず控えておいてください。</strong></p>
+            <div class="display-6 fw-bold mb-2"><%= c.getAccessKey() %></div>
+            <p class="text-muted small mb-2">
+              経過確認は「対応状況の確認」から照合キーを入力してください。
+            </p>
+            <p class="text-muted small mb-0">
+              メール送信機能は未設定です。
+            </p>
+            <div class="mt-3">
+              <a class="btn btn-outline-secondary btn-sm" href="<%= ctx %>/">トップへ戻る</a>
+              <a class="btn btn-outline-primary btn-sm ms-2" href="<%= ctx %>/consult/status">対応状況の確認</a>
             </div>
-            <div class="mb-2">
-              <div class="text-muted small">専用URL</div>
-              <div>
-                <a href="<%= ctx %>/consult/status/<%= c.getAccessKey() %>">
-                  <%= ctx %>/consult/status/<%= c.getAccessKey() %>
-                </a>
-              </div>
-            </div>
-            <a class="btn btn-outline-secondary btn-sm" href="<%= ctx %>/">トップへ戻る</a>
-          </div>
-        </div>
-      <% } %>
-
-      <% if (statusUrl != null && !statusUrl.isEmpty()) { %>
-        <div class="card shadow-sm mt-4">
-          <div class="card-header">Status URL</div>
-          <div class="card-body">
-            <% if (mailNotice != null && !mailNotice.isEmpty()) { %>
-              <div class="alert alert-warning small mb-2"><%= mailNotice %></div>
-            <% } %>
-            <div class="mb-2">
-              <a href="<%= statusUrl %>"><%= statusUrl %></a>
-            </div>
-            <input class="form-control" value="<%= statusUrl %>" readonly>
-            <% if (mailtoUrl != null && !mailtoUrl.isEmpty()) { %>
-              <a class="btn btn-outline-primary btn-sm mt-2" href="<%= mailtoUrl %>">Open mail app</a>
-            <% } %>
           </div>
         </div>
       <% } %>

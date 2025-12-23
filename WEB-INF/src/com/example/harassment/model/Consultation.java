@@ -7,58 +7,53 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * ハラスメント相談シート 1 件分を表すモデルクラス
+ * ハラスメント相談シート1件を表すモデル。
  */
 public class Consultation {
 
-    // ====== 連番ID ======
+    // ====== 基本 ======
     private int id;
+    private String sheetDate;                // シート記録日（文字列でOK）
+    private String consultantName;           // 相談者名（任意）
+    private String contactEmail;             // Email（未使用）
+    private String summary;                  // 相談概要
 
-    // ====== 相談シートの主な項目 ======
-    private String sheetDate;                // シート記入日（文字列でOK）
-    private String consultantName;           // 相談者氏名（任意）
-    private String contactEmail;            // Email (optional)
-    private String summary;                  // 相談の概要
-
-    // 発生後の状況
-    // reportedExists: "NONE" / "SOMEONE" / "YES" / "NO" など揺れても表示できるようにする
-    private String reportedExists;           // 「相談済み」などのコード
+    // ====== 発生後の状況 ======
+    private String reportedExists;           // 相談有無
     private String reportedPerson;           // 相談相手
     private String reportedAt;               // 相談日時
-    private String followUp;                 // その後の対応（相談者側の自己記入）
+    private String followUp;                 // その後の対応（相談者側記入）
 
-    // 心身の状態
-    private int mentalScale;                 // 1〜10
-    private String mentalDetail;             // 心身の状態の詳細
+    // ====== 心身の状態 ======
+    private int mentalScale;                 // 1-10
+    private String mentalDetail;             // 詳細
 
-    // 今後の希望（カンマ区切りで複数コードを保存）
-    private String futureRequest;            // コード列（カンマ区切り）
-    private String futureRequestOtherDetail; // その他の具体的な希望
+    // ====== 今後の希望 ======
+    private String futureRequest;            // カンマ区切りのコード
+    private String futureRequestOtherDetail; // その他の詳細
 
-    // 共有の可否
-    // sharePermission: "ALL_OK" / "LIMITED" / "NO_SHARE"
-    private String sharePermission;          // 共有範囲コード
-    private String shareLimitedTargets;      // 限定共有の相手（テキスト）
+    // ====== 共有許可 ======
+    private String sharePermission;          // ALL_OK / LIMITED / NO_SHARE
+    private String shareLimitedTargets;      // 限定相手
 
-    // 管理者対応欄
-    private boolean adminChecked;            // 管理者が確認済みか
-    private String followUpDraft;            // 管理者が編集中の対応内容（下書き）
-    private String followUpAction;           // 確定した対応内容（マスターに見せる用）
+    // ====== 管理者対応 ======
+    private boolean adminChecked;            // 確認済み
+    private String followUpDraft;            // 下書き
+    private String followUpAction;           // 確定内容
 
-    // 相談の進行状況
-    // NEW / CHECKING / IN_PROGRESS / DONE
-    private String status;
+    // ====== ステータス ======
+    private String status;                   // UNCONFIRMED / CONFIRMED / REVIEWING / IN_PROGRESS / DONE
 
-    // ====== 相談者マイページ用（アクセスキー） ======
+    // ====== 照合キー ======
     private String accessKey;
 
-    // ====== チャット（相談者↔管理者/マスター） ======
+    // ====== チャット ======
     private List<ChatMessage> chatMessages = new ArrayList<>();
 
     // ====== 対応履歴 ======
     private List<FollowUpRecord> followUpHistory = new ArrayList<>();
 
-    // ====== チャット通知 ======
+    // ====== 通知 ======
     private int unreadForReporter;
     private int unreadForAdmin;
     private String latestChatMessage;
@@ -67,18 +62,17 @@ public class Consultation {
     private LocalDateTime lastReporterReadAt;
     private LocalDateTime lastAdminReadAt;
 
-    // ====== 相談者の最終評価 ======
-    // DONE のときだけ入力する想定
-    private int reporterRating;              // 1〜5（未評価は 0）
-    private String reporterFeedback;         // 自由記述
-    private LocalDateTime reporterRatedAt;   // 評価日時
-        // 相談者の満足度（別機能：SatisfactionSubmitServlet用）
-        private int satisfactionScore;                 // 1～5など
-        private String satisfactionComment;            // コメント
-        private java.time.LocalDateTime satisfactionAt; // 評価日時
-    
-    // ====== 通常の getter / setter ======
+    // ====== 相談者評価 ======
+    private int reporterRating;              // 1-5、未評価は0
+    private String reporterFeedback;
+    private LocalDateTime reporterRatedAt;
 
+    // ====== 相談者満足度（未使用） ======
+    private int satisfactionScore;
+    private String satisfactionComment;
+    private LocalDateTime satisfactionAt;
+
+    // ====== getter / setter ======
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -143,20 +137,11 @@ public class Consultation {
 
     public String getLookupKey() { return accessKey; }
 
-    // ====== JSPが呼んでいる名前に合わせた getter 群 ======
-
-    /**
-     * consult/my.jsp が呼んでいる想定: c.getChatMessages()
-     */
     public List<ChatMessage> getChatMessages() {
         if (chatMessages == null) chatMessages = new ArrayList<>();
         return chatMessages;
     }
 
-    /**
-     * 既存コード互換: c.getChats()
-     * （Repositoryや他JSPが getChats() を使っていても壊れないように）
-     */
     public List<ChatMessage> getChats() {
         return getChatMessages();
     }
@@ -195,8 +180,6 @@ public class Consultation {
     public LocalDateTime getLastAdminReadAt() { return lastAdminReadAt; }
     public void setLastAdminReadAt(LocalDateTime lastAdminReadAt) { this.lastAdminReadAt = lastAdminReadAt; }
 
-    // ====== 評価（JSPが呼んでいるメソッド） ======
-
     public boolean isRated() {
         return reporterRating > 0 || reporterRatedAt != null
                 || (reporterFeedback != null && !reporterFeedback.trim().isEmpty());
@@ -211,8 +194,16 @@ public class Consultation {
     public LocalDateTime getReporterRatedAt() { return reporterRatedAt; }
     public void setReporterRatedAt(LocalDateTime reporterRatedAt) { this.reporterRatedAt = reporterRatedAt; }
 
-    // ====== 画面表示用ラベル ======
+    public int getSatisfactionScore() { return satisfactionScore; }
+    public void setSatisfactionScore(int satisfactionScore) { this.satisfactionScore = satisfactionScore; }
 
+    public String getSatisfactionComment() { return satisfactionComment; }
+    public void setSatisfactionComment(String satisfactionComment) { this.satisfactionComment = satisfactionComment; }
+
+    public LocalDateTime getSatisfactionAt() { return satisfactionAt; }
+    public void setSatisfactionAt(LocalDateTime satisfactionAt) { this.satisfactionAt = satisfactionAt; }
+
+    // ====== 表示用ラベル ======
     public String getStatusLabel() {
         if (status == null || status.trim().isEmpty()) return "";
         switch (status) {
@@ -221,7 +212,6 @@ public class Consultation {
             case "REVIEWING": return "対応検討中";
             case "IN_PROGRESS": return "対応中";
             case "DONE": return "対応済";
-            // 旧ステータス互換
             case "NEW": return "未確認";
             case "CHECKING": return "確認";
             default: return status;
@@ -231,10 +221,8 @@ public class Consultation {
     public String getReportedExistsLabel() {
         if (reportedExists == null || reportedExists.isEmpty()) return "";
         switch (reportedExists) {
-            // 新コード
             case "NONE": return "まだ誰にも相談していない";
             case "SOMEONE": return "すでに誰かに相談している";
-            // 旧コード（YES/NO）
             case "YES": return "すでに誰かに相談している";
             case "NO": return "まだ誰にも相談していない";
             default: return reportedExists;
@@ -244,9 +232,9 @@ public class Consultation {
     public String getSharePermissionLabel() {
         if (sharePermission == null || sharePermission.isEmpty()) return "";
         switch (sharePermission) {
-            case "ALL_OK": return "必要に応じて関係者に共有してよい";
+            case "ALL_OK": return "必要に応じて関係者へ共有してよい";
             case "LIMITED": return "共有範囲を限定してほしい";
-            case "NO_SHARE": return "相談内容は共有してほしくない";
+            case "NO_SHARE": return "相談窓口以外には共有しないでほしい";
             default: return sharePermission;
         }
     }
@@ -267,43 +255,33 @@ public class Consultation {
                 case "ONLY_LISTEN":
                     result.add("まず話を聞いてほしい");
                     break;
-
                 case "WORK_CHANGE":
                     result.add("配置転換・業務内容を調整してほしい");
                     break;
-
                 case "ENV_IMPROVE":
-                    result.add("職場環境や人間関係を改善してほしい");
+                    result.add("職場環境・人間関係を改善してほしい");
                     break;
-
                 case "FORMAL_PROCEDURE":
                     result.add("正式な申し立てや調査を進めてほしい");
                     break;
-
                 case "MENTAL_SUPPORT":
-                    result.add("産業医・カウンセラーなど専門家につなげてほしい");
+                    result.add("専門家（産業医・カウンセラー等）につなげてほしい");
                     break;
-
                 case "ADVISE":
-                    result.add("助言やアドバイスがほしい");
+                    result.add("助言・アドバイスがほしい");
                     break;
-
                 case "ARRANGE_MEETING":
                     result.add("面談の場を調整してほしい");
                     break;
-
                 case "KEEP_RECORD":
-                    result.add("記録として残しておいてほしい");
+                    result.add("記録として残してほしい");
                     break;
-
                 case "NOTHING":
                     result.add("特に希望はない");
                     break;
-
                 case "OTHER":
-                    result.add("その他の希望");
+                    result.add("その他");
                     break;
-
                 default:
                     result.add(code);
                     break;
@@ -324,29 +302,6 @@ public class Consultation {
         if (mentalScale >= 4) return mentalScale + "（ややつらい）";
         return mentalScale + "（比較的落ち着いている）";
     }
-    public int getSatisfactionScore() {
-        return satisfactionScore;
-    }
-
-    public void setSatisfactionScore(int satisfactionScore) {
-        this.satisfactionScore = satisfactionScore;
-    }
-
-    public String getSatisfactionComment() {
-        return satisfactionComment;
-    }
-
-    public void setSatisfactionComment(String satisfactionComment) {
-        this.satisfactionComment = satisfactionComment;
-    }
-
-    public java.time.LocalDateTime getSatisfactionAt() {
-        return satisfactionAt;
-    }
-
-    public void setSatisfactionAt(java.time.LocalDateTime satisfactionAt) {
-        this.satisfactionAt = satisfactionAt;
-    }
 
     public String getSatisfactionScoreLabel() {
         if (satisfactionScore <= 0) return "";
@@ -359,5 +314,4 @@ public class Consultation {
             default: return String.valueOf(satisfactionScore);
         }
     }
-
 }

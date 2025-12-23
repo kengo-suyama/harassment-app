@@ -6,8 +6,7 @@
     <meta charset="UTF-8">
     <title>管理者画面 - 相談一覧</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
@@ -24,6 +23,31 @@
     <h1 class="h4 mb-3">相談一覧</h1>
 
     <%
+        String sort = request.getParameter("sort");
+        String sortLabel = "新しい順";
+        if ("oldest".equals(sort)) {
+            sortLabel = "古い順";
+        } else if ("mental_desc".equals(sort)) {
+            sortLabel = "しんどさ順";
+        } else if ("unconfirmed".equals(sort)) {
+            sortLabel = "未確認順";
+        }
+    %>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <form class="d-flex gap-2" method="get" action="<%= request.getContextPath() %>/admin/consult/list">
+            <select class="form-select form-select-sm" name="sort">
+                <option value="newest" <%= (sort == null || sort.isEmpty() || "newest".equals(sort)) ? "selected" : "" %>>新しい順</option>
+                <option value="oldest" <%= "oldest".equals(sort) ? "selected" : "" %>>古い順</option>
+                <option value="mental_desc" <%= "mental_desc".equals(sort) ? "selected" : "" %>>しんどさ順</option>
+                <option value="unconfirmed" <%= "unconfirmed".equals(sort) ? "selected" : "" %>>未確認順</option>
+            </select>
+            <button class="btn btn-sm btn-outline-primary" type="submit">並び替え</button>
+        </form>
+        <div class="small text-muted">現在の並び順：<%= sortLabel %></div>
+    </div>
+
+    <%
         List<Consultation> consultations =
                 (List<Consultation>) request.getAttribute("consultations");
     %>
@@ -38,7 +62,6 @@
             <th>進捗</th>
             <th>未読</th>
             <th>最新メッセージ</th>
-            <th>確認</th>
             <th>操作</th>
         </tr>
         </thead>
@@ -47,7 +70,7 @@
             if (consultations == null || consultations.isEmpty()) {
         %>
         <tr>
-            <td colspan="9" class="text-center text-muted">
+            <td colspan="8" class="text-center text-muted">
                 まだ相談は登録されていません。
             </td>
         </tr>
@@ -57,9 +80,9 @@
         %>
         <tr>
             <td><%= c.getId() %></td>
-            <td><%= c.getSheetDate() %></td>
-            <td><%= c.getConsultantName() %></td>
-            <td><%= c.getSummary() %></td>
+            <td><%= c.getSheetDate() != null ? c.getSheetDate() : "" %></td>
+            <td><%= c.getConsultantName() != null ? c.getConsultantName() : "" %></td>
+            <td><%= c.getSummary() != null ? c.getSummary() : "" %></td>
             <td>
                 <form method="post" action="<%= request.getContextPath() %>/admin/consult/status" class="d-flex gap-1">
                     <input type="hidden" name="id" value="<%= c.getId() %>">
@@ -84,40 +107,10 @@
                 <%= c.getLatestChatMessage() != null ? c.getLatestChatMessage() : "" %>
             </td>
             <td>
-                <%
-                    if (c.isAdminChecked()) {
-                %>
-                <span class="badge bg-success">確認済</span>
-                <%
-                    } else {
-                %>
-                <span class="badge bg-secondary">未確認</span>
-                <%
-                    }
-                %>
-            </td>
-            <td>
-                <!-- 詳細ボタン -->
                 <a href="<%= request.getContextPath() %>/admin/consult/detail?id=<%= c.getId() %>"
                    class="btn btn-sm btn-outline-primary">
                     詳細
                 </a>
-
-                <!-- 確認チェックボタン（未確認のときだけ） -->
-                <%
-                    if (!c.isAdminChecked()) {
-                %>
-                <form method="post"
-                      action="<%= request.getContextPath() %>/admin/consult/check"
-                      class="d-inline">
-                    <input type="hidden" name="id" value="<%= c.getId() %>">
-                    <button type="submit" class="btn btn-sm btn-outline-success">
-                        確認チェック
-                    </button>
-                </form>
-                <%
-                    }
-                %>
             </td>
         </tr>
         <%

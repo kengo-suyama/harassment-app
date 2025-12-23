@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>相談状況の確認</title>
+  <title>対応状況の確認</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -12,7 +12,7 @@
 <nav class="navbar navbar-dark bg-dark mb-4">
   <div class="container-fluid">
     <a class="navbar-brand" href="<%= request.getContextPath() %>/">ハラスメント相談システム</a>
-    <span class="navbar-text text-white">相談状況の確認</span>
+    <span class="navbar-text text-white">対応状況の確認</span>
   </div>
 </nav>
 
@@ -30,15 +30,18 @@
       <div class="card shadow-sm">
         <div class="card-body">
           <h1 class="h5">照合キーを入力</h1>
+          <p class="text-muted small mb-3">
+            送信完了時に表示された照合キーを入力してください。
+          </p>
 
           <form method="post" action="<%= request.getContextPath() %>/consult/status">
             <div class="mb-3">
               <label class="form-label">照合キー</label>
-              <input type="text" name="token" class="form-control" required placeholder="例：A1B2C3D4EF5G6H7I">
+              <input type="text" name="token" class="form-control" required placeholder="例：1B2C3D4EF5G6H7I">
             </div>
 
             <button class="btn btn-primary" type="submit">確認する</button>
-            <a class="btn btn-outline-secondary ms-2" href="<%= request.getContextPath() %>/">戻る</a>
+            <a class="btn btn-outline-secondary ms-2" href="<%= request.getContextPath() %>/">トップへ戻る</a>
           </form>
         </div>
       </div>

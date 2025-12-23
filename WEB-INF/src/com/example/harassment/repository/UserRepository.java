@@ -59,6 +59,39 @@ public class UserRepository {
         }
     }
 
+    public boolean changePasswordByRole(String role, String currentPassword, String newPassword) {
+        String sql = "SELECT id, password_hash, password_algo FROM users WHERE role=? AND active=1";
+        int userId = -1;
+        String hash = null;
+        String algo = null;
+        try (Connection con = DbUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, role);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return false;
+                userId = rs.getInt("id");
+                hash = rs.getString("password_hash");
+                algo = rs.getString("password_algo");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if (!matches(currentPassword, hash, algo)) return false;
+
+        String newHash = hashPassword(newPassword);
+        String update = "UPDATE users SET password_hash=?, password_algo=? WHERE id=?";
+        try (Connection con = DbUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(update)) {
+            ps.setString(1, newHash);
+            ps.setString(2, "SHA256");
+            ps.setInt(3, userId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private boolean matches(String password, String hash, String algo) {
         if (password == null || hash == null) return false;
         if ("SHA256".equalsIgnoreCase(algo) || algo == null || algo.isEmpty()) {
@@ -77,7 +110,7 @@ public class UserRepository {
             }
             return sb.toString();
         } catch (Exception e) {
-            throw new RuntimeException("パスワードハッシュに失敗しました。", e);
+            throw new RuntimeException("パスワードのハッシュ化に失敗しました。", e);
         }
     }
 

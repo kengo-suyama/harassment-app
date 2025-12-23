@@ -23,7 +23,7 @@
 
 <div class="container">
   <% if (c == null) { %>
-    <div class="alert alert-danger">相談が見つかりません。</div>
+    <div class="alert alert-danger">相談データが見つかりませんでした。</div>
   <% } else { %>
 
   <div class="row g-3">
@@ -38,10 +38,11 @@
             <input type="hidden" name="id" value="<%= c.getId() %>">
             <div class="col-8">
               <select class="form-select" name="status">
-                <option value="NEW" <%= "NEW".equals(c.getStatus())?"selected":"" %>>未対応</option>
-                <option value="CHECKING" <%= "CHECKING".equals(c.getStatus())?"selected":"" %>>確認中</option>
+                <option value="UNCONFIRMED" <%= ("UNCONFIRMED".equals(c.getStatus()) || "NEW".equals(c.getStatus()))?"selected":"" %>>未確認</option>
+                <option value="CONFIRMED" <%= ("CONFIRMED".equals(c.getStatus()) || "CHECKING".equals(c.getStatus()))?"selected":"" %>>確認</option>
+                <option value="REVIEWING" <%= "REVIEWING".equals(c.getStatus())?"selected":"" %>>対応検討中</option>
                 <option value="IN_PROGRESS" <%= "IN_PROGRESS".equals(c.getStatus())?"selected":"" %>>対応中</option>
-                <option value="DONE" <%= "DONE".equals(c.getStatus())?"selected":"" %>>対応完了</option>
+                <option value="DONE" <%= "DONE".equals(c.getStatus())?"selected":"" %>>対応済</option>
               </select>
             </div>
             <div class="col-4">
@@ -49,27 +50,19 @@
             </div>
           </form>
 
-          <form method="post" action="<%= request.getContextPath() %>/admin/consult/check" class="mb-3">
-            <input type="hidden" name="id" value="<%= c.getId() %>">
-            <input type="hidden" name="checked" value="<%= c.isAdminChecked() ? "false":"true" %>">
-            <button class="btn btn-outline-success" type="submit">
-              <%= c.isAdminChecked() ? "確認済みを解除" : "確認済みにする" %>
-            </button>
-          </form>
-
           <hr>
-          <div><strong>記入日：</strong> <%= c.getSheetDate() %></div>
-          <div><strong>氏名：</strong> <%= (c.getConsultantName()==null||c.getConsultantName().isEmpty())?"（未記入）":c.getConsultantName() %></div>
-          <div class="mt-2"><strong>概要：</strong><pre class="mb-0"><%= c.getSummary() %></pre></div>
+          <div><strong>相談日：</strong> <%= c.getSheetDate() != null ? c.getSheetDate() : "" %></div>
+          <div><strong>氏名：</strong> <%= c.getConsultantName() != null ? c.getConsultantName() : "" %></div>
+          <div class="mt-2"><strong>概要：</strong><pre class="mb-0"><%= c.getSummary() != null ? c.getSummary() : "" %></pre></div>
 
           <hr>
           <div><strong>相談の有無：</strong> <%= c.getReportedExistsLabel() %></div>
           <div><strong>相談相手：</strong> <%= c.getReportedPerson()!=null?c.getReportedPerson():"" %></div>
           <div><strong>相談日時：</strong> <%= c.getReportedAt()!=null?c.getReportedAt():"" %></div>
-          <div class="mt-2"><strong>その後の対応：</strong><pre class="mb-0"><%= c.getFollowUp()!=null?c.getFollowUp():"" %></pre></div>
+          <div class="mt-2"><strong>経過：</strong><pre class="mb-0"><%= c.getFollowUp()!=null?c.getFollowUp():"" %></pre></div>
 
           <hr>
-          <div><strong>しんどさ：</strong> <%= c.getMentalScaleLabel() %></div>
+          <div><strong>つらさ：</strong> <%= c.getMentalScaleLabel() %></div>
           <div class="mt-2"><strong>詳細：</strong><pre class="mb-0"><%= c.getMentalDetail()!=null?c.getMentalDetail():"" %></pre></div>
 
           <hr>
@@ -77,27 +70,22 @@
           <div class="mt-2"><strong>その他：</strong><pre class="mb-0"><%= c.getFutureRequestOtherDetail()!=null?c.getFutureRequestOtherDetail():"" %></pre></div>
 
           <hr>
-          <div><strong>共有：</strong> <%= c.getSharePermissionLabel() %></div>
-          <div><strong>限定相手：</strong> <%= c.getShareLimitedTargets()!=null?c.getShareLimitedTargets():"" %></div>
+          <div><strong>共有許可：</strong> <%= c.getSharePermissionLabel() %></div>
+          <div><strong>共有範囲：</strong> <%= c.getShareLimitedTargets()!=null?c.getShareLimitedTargets():"" %></div>
 
           <hr>
           <div class="d-flex justify-content-between align-items-center">
-            <div><strong>確定対応：</strong></div>
+            <div><strong>確定内容：</strong></div>
             <a class="btn btn-sm btn-outline-primary" href="<%= request.getContextPath() %>/admin/consult/followup/edit?id=<%= c.getId() %>">対応入力</a>
           </div>
-          <pre class="mb-0 mt-2"><%= c.getFollowUpAction()!=null?c.getFollowUpAction():"（未確定）" %></pre>
+          <pre class="mb-0 mt-2"><%= c.getFollowUpAction()!=null?c.getFollowUpAction():"" %></pre>
         </div>
       </div>
 
       <div class="card shadow-sm">
         <div class="card-body">
-          <h2 class="h6">相談者の最終評価</h2>
-          <% if (c.isRated()) { %>
-            <div class="alert alert-success">★ <%= c.getReporterRating() %> / 5</div>
-            <pre class="mb-0"><%= c.getReporterFeedback()!=null?c.getReporterFeedback():"" %></pre>
-          <% } else { %>
-            <div class="text-muted">まだ評価は届いていません。</div>
-          <% } %>
+          <h2 class="h6">相談者アンケート</h2>
+          <div class="text-muted">アンケート結果は全権管理者のみ確認できます。</div>
         </div>
       </div>
 
@@ -107,12 +95,19 @@
       <div class="card shadow-sm">
         <div class="card-body">
           <h2 class="h6 mb-3">チャット</h2>
+          <% if (c.getUnreadForAdmin() > 0) { %>
+            <div class="alert alert-info py-2">
+              未読メッセージ：<strong><%= c.getUnreadForAdmin() %>件</strong>
+            </div>
+          <% } %>
 
           <%
             List<ChatMessage> msgs = c.getChatMessages();
             if (msgs == null || msgs.isEmpty()) {
           %>
-            <div class="text-muted">まだメッセージはありません。</div>
+            <div class="p-3 text-center bg-light border rounded text-muted small">
+              まだメッセージはありません
+            </div>
           <%
             } else {
               for (ChatMessage m : msgs) {
@@ -129,7 +124,7 @@
           <hr>
           <form method="post" action="<%= request.getContextPath() %>/admin/consult/chat/send">
             <input type="hidden" name="id" value="<%= c.getId() %>">
-            <textarea class="form-control mb-2" name="message" rows="3" placeholder="相談者への確認、面談日時の提案など"></textarea>
+            <textarea class="form-control mb-2" name="message" rows="3" placeholder="相談者への確認事項、面談希望日時の提案など"></textarea>
             <button class="btn btn-primary" type="submit">送信</button>
           </form>
         </div>
@@ -139,7 +134,6 @@
         class="btn btn-outline-secondary">
        一覧へ戻る
      </a>
-     
   </div>
 
   <% } %>

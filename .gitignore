@@ -9,3 +9,17 @@ WEB-INF/classes/
 # OS junk
 Thumbs.db
 .DS_Store
+# Tomcatが生成するもの（混ざりやすい）
+**/work/
+**/logs/
+**/temp/
+
+# Javaビルド成果物
+**/target/
+*.class
+
+# IDE/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -3,7 +3,10 @@ package com.example.harassment.servlet;
 import com.example.harassment.repository.UserRepository;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class PasswordChangeServlet extends HttpServlet {
@@ -27,8 +30,7 @@ public class PasswordChangeServlet extends HttpServlet {
         }
 
         request.setAttribute("role", role);
-        request.getRequestDispatcher("/password_change.jsp")
-               .forward(request, response);
+        request.getRequestDispatcher("/password_change.jsp").forward(request, response);
     }
 
     @Override
@@ -56,8 +58,7 @@ public class PasswordChangeServlet extends HttpServlet {
         if (newPassword == null || !newPassword.equals(confirmPassword)) {
             request.setAttribute("role", role);
             request.setAttribute("error", "新しいパスワードと確認用パスワードが一致しません。");
-            request.getRequestDispatcher("/password_change.jsp")
-                   .forward(request, response);
+            request.getRequestDispatcher("/password_change.jsp").forward(request, response);
             return;
         }
 
@@ -68,18 +69,15 @@ public class PasswordChangeServlet extends HttpServlet {
         }
 
         boolean changed = users.changePassword(userId, currentPassword, newPassword);
-
         if (!changed) {
             request.setAttribute("role", role);
             request.setAttribute("error", "現在のパスワードが正しくありません。");
-            request.getRequestDispatcher("/password_change.jsp")
-                   .forward(request, response);
+            request.getRequestDispatcher("/password_change.jsp").forward(request, response);
             return;
         }
 
         request.setAttribute("role", role);
-        request.setAttribute("message", "パスワードを変更しました。次回ログインから新しいパスワードが有効になります。");
-        request.getRequestDispatcher("/password_change.jsp")
-               .forward(request, response);
+        request.setAttribute("message", "パスワードを変更しました。");
+        request.getRequestDispatcher("/password_change.jsp").forward(request, response);
     }
 }

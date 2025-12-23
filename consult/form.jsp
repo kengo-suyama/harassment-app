@@ -62,8 +62,7 @@
     <title>ハラスメント相談シート</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
@@ -81,8 +80,7 @@
                 <div class="card-body">
                     <h1 class="h4 mb-3">ハラスメント相談シート</h1>
                     <p class="text-muted small mb-0">
-                        このシートは、職場等でのハラスメントに関する相談内容を記録するためのものです。<br>
-                        気になること・不安なことがあれば、可能な範囲でご記入ください。（※は必須項目）
+                        相談内容を記録するためのシートです。可能な範囲でご記入ください（※は必須）。
                     </p>
                 </div>
             </div>
@@ -105,7 +103,7 @@
                 }
             %>
 
-            <!-- 下書き削除は「別フォーム」(ネスト禁止) -->
+            <!-- 下書き削除（別フォーム） -->
             <div class="d-flex justify-content-end mb-3">
                 <form method="post"
                       action="<%= request.getContextPath() %>/consult/draft/clear"
@@ -116,7 +114,6 @@
                 </form>
             </div>
 
-            <!-- 相談フォーム本体 -->
             <form method="post" action="<%= request.getContextPath() %>/consult/confirm">
 
                 <!-- 1. 基本情報 -->
@@ -124,10 +121,10 @@
                     <div class="card-header bg-primary text-white">基本情報</div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label">シート記入日</label>
+                            <label class="form-label">シート記録日</label>
                             <input type="date" name="sheetDate" class="form-control"
                                    value="<%= old(request, "sheetDate") %>">
-                            <div class="form-text">未記入の場合は、入力日を自動記録することがあります。</div>
+                            <div class="form-text">未記入の場合は入力日を自動記録します。</div>
                         </div>
 
                         <div class="mb-3">
@@ -137,26 +134,20 @@
                                    value="<%= old(request, "consultantName") %>">
                             <div class="form-text">匿名での相談も可能です。</div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email (optional)</label>
-                            <input type="email" name="contactEmail" class="form-control"
-                                   placeholder="user@example.com"
-                                   value="<%= old(request, "contactEmail") %>">
-                            <div class="form-text">経過確認URLを送付します。</div>
-                        </div>
                     </div>
                 </div>
 
                 <!-- 2. 相談内容の概要 -->
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-secondary text-white">相談内容の概要（※）</div>
+                    <div class="card-header bg-secondary text-white">相談内容の概要（※必須）</div>
                     <div class="card-body">
                         <div class="mb-3">
                             <label class="form-label">
-                                どのようなことでお困りですか？（概要）<span class="text-danger">※</span>
+                                どのようなことでお困りですか（概要）
+                                <span class="text-danger">※</span>
                             </label>
                             <textarea name="summary" rows="5" class="form-control"
-                                      placeholder="例）上司から繰り返し大声で叱責されている…"><%= old(request, "summary") %></textarea>
+                                      placeholder="例）上司から繰り返し大声で叱責されている"><%= old(request, "summary") %></textarea>
                         </div>
                     </div>
                 </div>
@@ -167,7 +158,7 @@
                     <div class="card-body">
 
                         <div class="mb-3">
-                            <label class="form-label">すでに誰かに相談しましたか？</label>
+                            <label class="form-label">すでに誰かに相談しましたか</label>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="reportedExists" value="YES"
                                        <%= oldRadio(request, "reportedExists", "YES", "") ? "checked" : "" %>>
@@ -183,11 +174,10 @@
                         <div class="mb-3">
                             <label class="form-label">相談した相手</label>
                             <input type="text" name="reportedPerson" class="form-control"
-                                   placeholder="例）職場の同僚、人事担当者 など"
+                                   placeholder="例）職場の同僚、人事担当者など"
                                    value="<%= old(request, "reportedPerson") %>">
                         </div>
 
-                        <!-- 相談日時（カレンダー） -->
                         <div class="mb-3">
                             <label class="form-label">相談した日時</label>
                             <input type="datetime-local" name="reportedAt" class="form-control"
@@ -198,7 +188,7 @@
                         <div class="mb-3">
                             <label class="form-label">その後の対応や経過</label>
                             <textarea name="followUp" rows="4" class="form-control"
-                                      placeholder="例）部署異動の提案があったがまだ決まっていない…"><%= old(request, "followUp") %></textarea>
+                                      placeholder="例）部署異動の提案があったがまだ決まっていない"><%= old(request, "followUp") %></textarea>
                         </div>
                     </div>
                 </div>
@@ -208,7 +198,7 @@
                     <div class="card-header bg-warning">現在の心身の状態</div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label">今のつらさ（1〜10）</label>
+                            <label class="form-label">今のつらさ（1-10）</label>
                             <input type="number" name="mentalScale" min="1" max="10" class="form-control"
                                    value="<%= old(request, "mentalScale").isEmpty() ? "5" : old(request, "mentalScale") %>">
                         </div>
@@ -216,7 +206,7 @@
                         <div class="mb-3">
                             <label class="form-label">詳細</label>
                             <textarea name="mentalDetail" rows="4" class="form-control"
-                                      placeholder="例）眠れない、食欲がない…"><%= old(request, "mentalDetail") %></textarea>
+                                      placeholder="例）眠れない、食欲がない"><%= old(request, "mentalDetail") %></textarea>
                         </div>
                     </div>
                 </div>
@@ -233,7 +223,7 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="futureRequest" value="ADVISE"
                                    <%= oldChecked(request, "futureRequest", "ADVISE") ? "checked" : "" %>>
-                            <label class="form-check-label">助言やアドバイスがほしい</label>
+                            <label class="form-check-label">助言・アドバイスがほしい</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="futureRequest" value="ARRANGE_MEETING"
@@ -276,7 +266,7 @@
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="sharePermission" value="ALL_OK"
                                    <%= oldRadio(request, "sharePermission", "ALL_OK", "ALL_OK") ? "checked" : "" %>>
-                            <label class="form-check-label">必要と判断される関係者には共有してよい</label>
+                            <label class="form-check-label">必要に応じて関係者へ共有してよい</label>
                         </div>
 
                         <div class="form-check">
@@ -289,7 +279,7 @@
                             <input type="text"
                                    name="shareLimitedTargets"
                                    class="form-control"
-                                   placeholder="例）人事担当者のみ／事業所長まで など"
+                                   placeholder="例）人事担当者のみ、事業所長まで など"
                                    value="<%= old(request,"shareLimitedTargets") %>">
                         </div>
 
@@ -303,7 +293,7 @@
 
                 <div class="d-flex justify-content-between mb-5">
                     <a href="<%= request.getContextPath() %>/" class="btn btn-outline-secondary">トップへ戻る</a>
-                    <button type="submit" class="btn btn-primary">内容確認へ進む</button>
+                    <button type="submit" class="btn btn-primary">入力確認へ進む</button>
                 </div>
 
             </form>

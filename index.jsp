@@ -23,6 +23,7 @@
           <h1 class="h4 mb-3">トップ</h1>
           <div class="d-flex gap-2 flex-wrap">
             <a class="btn btn-primary" href="<%= request.getContextPath() %>/consult/form">相談フォームへ</a>
+            <a class="btn btn-outline-primary" href="<%= request.getContextPath() %>/consult/status">対応状況の確認</a>
             <a class="btn btn-outline-dark" href="<%= request.getContextPath() %>/admin/login">管理者ログイン</a>
             <a class="btn btn-outline-secondary" href="<%= request.getContextPath() %>/master/login">全権管理者ログイン</a>
           </div>

@@ -21,7 +21,7 @@
 
 <div class="container">
   <% if (c == null) { %>
-    <div class="alert alert-danger">相談が見つかりません。</div>
+    <div class="alert alert-danger">相談データが見つかりませんでした。</div>
   <% } else { %>
 
   <div class="d-flex justify-content-between align-items-center mb-3">
@@ -33,18 +33,18 @@
     <div class="card-body">
       <div class="mb-2"><strong>状況：</strong> <%= c.getStatusLabel() %></div>
       <hr>
-      <div><strong>記入日：</strong> <%= c.getSheetDate() %></div>
-      <div><strong>氏名：</strong> <%= (c.getConsultantName()==null||c.getConsultantName().isEmpty())?"（未記入）":c.getConsultantName() %></div>
-      <div class="mt-2"><strong>概要：</strong><pre class="mb-0"><%= c.getSummary() %></pre></div>
+      <div><strong>相談日：</strong> <%= c.getSheetDate() != null ? c.getSheetDate() : "" %></div>
+      <div><strong>氏名：</strong> <%= c.getConsultantName() != null ? c.getConsultantName() : "" %></div>
+      <div class="mt-2"><strong>概要：</strong><pre class="mb-0"><%= c.getSummary() != null ? c.getSummary() : "" %></pre></div>
 
       <hr>
       <div><strong>相談の有無：</strong> <%= c.getReportedExistsLabel() %></div>
       <div><strong>相談相手：</strong> <%= c.getReportedPerson()!=null?c.getReportedPerson():"" %></div>
       <div><strong>相談日時：</strong> <%= c.getReportedAt()!=null?c.getReportedAt():"" %></div>
-      <div class="mt-2"><strong>その後の対応：</strong><pre class="mb-0"><%= c.getFollowUp()!=null?c.getFollowUp():"" %></pre></div>
+      <div class="mt-2"><strong>経過：</strong><pre class="mb-0"><%= c.getFollowUp()!=null?c.getFollowUp():"" %></pre></div>
 
       <hr>
-      <div><strong>しんどさ：</strong> <%= c.getMentalScaleLabel() %></div>
+      <div><strong>つらさ：</strong> <%= c.getMentalScaleLabel() %></div>
       <div class="mt-2"><strong>詳細：</strong><pre class="mb-0"><%= c.getMentalDetail()!=null?c.getMentalDetail():"" %></pre></div>
 
       <hr>
@@ -52,20 +52,20 @@
       <div class="mt-2"><strong>その他：</strong><pre class="mb-0"><%= c.getFutureRequestOtherDetail()!=null?c.getFutureRequestOtherDetail():"" %></pre></div>
 
       <hr>
-      <div><strong>共有：</strong> <%= c.getSharePermissionLabel() %></div>
-      <div><strong>限定相手：</strong> <%= c.getShareLimitedTargets()!=null?c.getShareLimitedTargets():"" %></div>
+      <div><strong>共有許可：</strong> <%= c.getSharePermissionLabel() %></div>
+      <div><strong>共有範囲：</strong> <%= c.getShareLimitedTargets()!=null?c.getShareLimitedTargets():"" %></div>
 
       <hr>
-      <div><strong>管理者の確定対応：</strong></div>
-      <pre class="mb-0"><%= c.getFollowUpAction()!=null?c.getFollowUpAction():"（未確定）" %></pre>
+      <div><strong>管理者の確定内容：</strong></div>
+      <pre class="mb-0"><%= c.getFollowUpAction()!=null?c.getFollowUpAction():"" %></pre>
 
       <hr>
-      <div><strong>相談者の評価：</strong></div>
+      <div><strong>相談者アンケート：</strong></div>
       <% if (c.isRated()) { %>
         <div class="alert alert-success mt-2">★ <%= c.getReporterRating() %> / 5</div>
         <pre class="mb-0"><%= c.getReporterFeedback()!=null?c.getReporterFeedback():"" %></pre>
       <% } else { %>
-        <div class="text-muted">まだ評価は届いていません。</div>
+        <div class="text-muted">まだアンケートは届いていません。</div>
       <% } %>
 
     </div>
@@ -74,7 +74,6 @@
     class="btn btn-outline-secondary">
    一覧へ戻る
  </a>
- 
   <% } %>
 </div>
 </body>

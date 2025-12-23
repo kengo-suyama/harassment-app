@@ -64,10 +64,11 @@
                      required>
             </div>
 
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-primary">ログイン</button>
-              <a href="<%= ctx %>/" class="btn btn-outline-secondary">トップへ戻る</a>
-            </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">ログイン</button>
+            <a href="<%= ctx %>/admin/password/reset" class="btn btn-outline-secondary">パスワード変更はこちら</a>
+            <a href="<%= ctx %>/" class="btn btn-outline-secondary">トップへ戻る</a>
+          </div>
 
           </form>
         </div>

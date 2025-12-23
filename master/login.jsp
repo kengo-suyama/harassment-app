@@ -13,7 +13,7 @@
     <div class="card-body">
       <h1 class="h5 mb-3">全権管理者ログイン</h1>
       <p class="text-muted small mb-4">
-        全権管理者用のログインです。相談一覧・詳細・評価の確認ができます。
+        全権管理者用のログインページです。相談内容・対応履歴・アンケートを確認できます。
       </p>
 
       <%
@@ -33,7 +33,10 @@
         <button class="btn btn-secondary w-100" type="submit">ログイン</button>
       </form>
 
-      <a class="btn btn-outline-secondary w-100 mt-2" href="<%= request.getContextPath() %>/">トップへ</a>
+      <a class="btn btn-outline-secondary w-100 mt-2" href="<%= request.getContextPath() %>/master/password/reset">
+        パスワード変更はこちら
+      </a>
+      <a class="btn btn-outline-secondary w-100 mt-2" href="<%= request.getContextPath() %>/">トップへ戻る</a>
     </div>
   </div>
 </div>

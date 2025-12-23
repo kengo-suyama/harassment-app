@@ -5,22 +5,22 @@ import com.example.harassment.repository.ConsultationRepository;
 import com.example.harassment.repository.RepositoryProvider;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 相談者が照合キーで状況確認する
+ * 相談者用の照合キー確認
  * GET : 入力フォーム or 照合キー付きの表示
  * POST: 照合キー入力 -> リダイレクト
  */
 public class ConsultStatusServlet extends HttpServlet {
 
-    private static final ConsultationRepository repository =
-        RepositoryProvider.get();
+    private static final ConsultationRepository repository = RepositoryProvider.get();
 
     @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
@@ -40,13 +40,11 @@ public class ConsultStatusServlet extends HttpServlet {
 
         repository.markChatRead(c.getId(), "REPORTER");
         request.setAttribute("consultation", c);
-        request.getRequestDispatcher("/consult/status_view.jsp")
-                .forward(request, response);
+        request.getRequestDispatcher("/consult/status_view.jsp").forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");

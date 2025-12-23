@@ -45,6 +45,7 @@
                     </form>
 
                     <div class="mt-3">
+                        <a href="<%= request.getContextPath() %>/password/reset" class="small">メール/パスワードを忘れた方はこちら</a><br>
                         <a href="<%= request.getContextPath() %>/" class="small">トップに戻る</a>
                     </div>
 

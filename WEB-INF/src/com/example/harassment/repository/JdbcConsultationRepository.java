@@ -233,6 +233,14 @@ public class JdbcConsultationRepository implements ConsultationRepository {
 
         if ("mental_desc".equalsIgnoreCase(sort)) {
             sb.append("ORDER BY c.mental_scale DESC ");
+        } else if ("unconfirmed_first".equalsIgnoreCase(sort)) {
+            sb.append("ORDER BY CASE c.status ")
+              .append("WHEN 'UNCONFIRMED' THEN 0 ")
+              .append("WHEN 'CONFIRMED' THEN 1 ")
+              .append("WHEN 'REVIEWING' THEN 2 ")
+              .append("WHEN 'IN_PROGRESS' THEN 3 ")
+              .append("WHEN 'DONE' THEN 4 ")
+              .append("ELSE 5 END, c.id DESC ");
         } else if ("id_desc".equalsIgnoreCase(sort)) {
             sb.append("ORDER BY c.id DESC ");
         } else {
