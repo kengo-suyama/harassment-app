@@ -96,7 +96,8 @@
           <hr>
           <form method="post" action="<%= request.getContextPath() %>/consult/chat/send">
             <input type="hidden" name="id" value="<%= c.getId() %>">
-            <textarea class="form-control mb-2" name="message" rows="3" placeholder="確認したいこと、面談希望日時など"></textarea>
+            <input type="hidden" name="token" value="<%= c.getLookupKey() %>">
+            <textarea class="form-control mb-2" name="text" rows="3" placeholder="確認したいこと、面談希望日時など"></textarea>
             <button class="btn btn-primary" type="submit">送信</button>
           </form>
         </div>
@@ -117,6 +118,7 @@
           <% } else { %>
             <form method="post" action="<%= request.getContextPath() %>/consult/eval/submit">
               <input type="hidden" name="id" value="<%= c.getId() %>">
+              <input type="hidden" name="token" value="<%= c.getLookupKey() %>">
               <div class="mb-2">
                 <label class="form-label">満足度（1〜5）</label>
                 <select class="form-select" name="rating">

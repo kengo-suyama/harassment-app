@@ -51,7 +51,7 @@ public class ChatMessage {
         if (senderRole == null) return "";
         switch (senderRole) {
             case "ADMIN": return "管理者";
-            case "MASTER": return "マスター";
+            case "MASTER": return "全権管理者";
             case "REPORTER": return "相談者";
             default: return senderRole;
         }

@@ -7,7 +7,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>相談内容確認（マスター）</title>
+    <title>相談内容確認（全権管理者）</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -32,7 +32,7 @@
 
 <nav class="navbar navbar-dark bg-success mb-4 no-print">
     <div class="container-fluid">
-        <span class="navbar-brand">マスター画面 - 相談内容確認</span>
+        <span class="navbar-brand">全権管理者画面 - 相談内容確認</span>
     </div>
 </nav>
 

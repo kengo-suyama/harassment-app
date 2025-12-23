@@ -15,7 +15,7 @@
     if ("ADMIN".equals(role)) {
         title = "管理者";
     } else if ("MASTER".equals(role)) {
-        title = "マスター";
+        title = "全権管理者";
     }
 %>
 

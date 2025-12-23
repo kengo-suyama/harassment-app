@@ -6,7 +6,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>繝槭せ繧ｿ繝ｼ - 蟇ｾ蠢懃ｵ先棡髢ｲ隕ｧ</title>
+  <title>全権管理者 - 対応結果閲覧</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -14,8 +14,8 @@
 
 <nav class="navbar navbar-dark bg-dark mb-4">
   <div class="container-fluid">
-    <a class="navbar-brand" href="<%= request.getContextPath() %>/">繝上Λ繧ｹ繝｡繝ｳ繝育嶌隲・す繧ｹ繝・Β</a>
-    <span class="navbar-text text-white">繝槭せ繧ｿ繝ｼ逕ｻ髱｢</span>
+    <a class="navbar-brand" href="<%= request.getContextPath() %>/master/consult/list">全権管理者</a>
+    <span class="navbar-text text-white">全権管理者画面</span>
   </div>
 </nav>
 

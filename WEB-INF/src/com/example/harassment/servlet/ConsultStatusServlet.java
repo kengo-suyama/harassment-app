@@ -1,21 +1,22 @@
 package com.example.harassment.servlet;
 
 import com.example.harassment.model.Consultation;
-import com.example.harassment.repository.MemoryConsultationRepository;
+import com.example.harassment.repository.ConsultationRepository;
+import com.example.harassment.repository.RepositoryProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
 
 /**
- * 相談者が「受付番号(ID) + 照合キー」で状況確認する
- * GET : 入力フォーム
- * POST: 照合して表示
+ * 相談者が照合キーで状況確認する
+ * GET : 入力フォーム or 照合キー付きの表示
+ * POST: 照合キー入力 -> リダイレクト
  */
 public class ConsultStatusServlet extends HttpServlet {
 
-    private static final MemoryConsultationRepository repository =
-        MemoryConsultationRepository.getInstance();
+    private static final ConsultationRepository repository =
+        RepositoryProvider.get();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -23,25 +24,24 @@ public class ConsultStatusServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-        String idStr = request.getParameter("id");
-        String key = request.getParameter("key");
-
-        if (!isBlank(idStr) && !isBlank(key)) {
-            int id = 0;
-            try { id = Integer.parseInt(idStr); } catch (Exception e) { /* ignore */ }
-            Consultation c = repository.findByIdAndKey(id, key.trim());
-            if (c == null) {
-                request.setAttribute("errorMessage", "受付番号または照合キーが一致しませんでした。");
-                request.getRequestDispatcher("/consult/status.jsp").forward(request, response);
-                return;
-            }
-            request.setAttribute("consultation", c);
-            request.getRequestDispatcher("/consult/status_view.jsp")
-                    .forward(request, response);
+        String pathInfo = request.getPathInfo();
+        if (pathInfo == null || "/".equals(pathInfo) || pathInfo.trim().isEmpty()) {
+            request.getRequestDispatcher("/consult/status.jsp").forward(request, response);
             return;
         }
 
-        request.getRequestDispatcher("/consult/status.jsp").forward(request, response);
+        String token = pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo;
+        Consultation c = repository.findByAccessKey(token.trim());
+        if (c == null) {
+            request.setAttribute("errorMessage", "照合キーが一致しませんでした。");
+            request.getRequestDispatcher("/consult/status.jsp").forward(request, response);
+            return;
+        }
+
+        repository.markChatRead(c.getId(), "REPORTER");
+        request.setAttribute("consultation", c);
+        request.getRequestDispatcher("/consult/status_view.jsp")
+                .forward(request, response);
     }
 
     @Override
@@ -51,25 +51,13 @@ public class ConsultStatusServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        String idStr = request.getParameter("id");
-        String key = request.getParameter("key");
-
-        int id = 0;
-        try { id = Integer.parseInt(idStr); } catch (Exception e) { /* ignore */ }
-
-        Consultation c = repository.findByIdAndKey(id, key != null ? key.trim() : "");
-        if (c == null) {
-            request.setAttribute("errorMessage", "受付番号または照合キーが一致しませんでした。");
+        String token = request.getParameter("token");
+        if (token == null || token.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "照合キーを入力してください。");
             request.getRequestDispatcher("/consult/status.jsp").forward(request, response);
             return;
         }
 
-        request.setAttribute("consultation", c);
-        request.getRequestDispatcher("/consult/status_view.jsp")
-                .forward(request, response);
-    }
-
-    private static boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
+        response.sendRedirect(request.getContextPath() + "/consult/status/" + token.trim());
     }
 }

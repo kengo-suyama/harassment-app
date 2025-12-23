@@ -1,7 +1,8 @@
 package com.example.harassment.servlet;
 
 import com.example.harassment.model.Consultation;
-import com.example.harassment.repository.MemoryConsultationRepository;
+import com.example.harassment.repository.ConsultationRepository;
+import com.example.harassment.repository.RepositoryProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -9,7 +10,7 @@ import java.io.IOException;
 
 public class AdminConsultDetailServlet extends HttpServlet {
 
-    private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
+    private static final ConsultationRepository repo = RepositoryProvider.get();
 
     private boolean isAdmin(HttpServletRequest request) {
         HttpSession s = request.getSession(false);
@@ -37,6 +38,9 @@ public class AdminConsultDetailServlet extends HttpServlet {
             } catch (Exception ignored) {}
         }
 
+        if (c != null) {
+            repo.markChatRead(c.getId(), "ADMIN");
+        }
         request.setAttribute("consultation", c);
         request.getRequestDispatcher("/admin/consult/detail.jsp").forward(request, response);
     }

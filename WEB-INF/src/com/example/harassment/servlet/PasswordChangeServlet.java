@@ -1,12 +1,14 @@
 package com.example.harassment.servlet;
 
-import com.example.harassment.auth.AuthService;
+import com.example.harassment.repository.UserRepository;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
 
 public class PasswordChangeServlet extends HttpServlet {
+
+    private static final UserRepository users = new UserRepository();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -59,12 +61,13 @@ public class PasswordChangeServlet extends HttpServlet {
             return;
         }
 
-        boolean changed = false;
-        if ("ADMIN".equals(role)) {
-            changed = AuthService.changeAdminPassword(currentPassword, newPassword);
-        } else if ("MASTER".equals(role)) {
-            changed = AuthService.changeMasterPassword(currentPassword, newPassword);
+        Integer userId = (Integer) session.getAttribute("loginUserId");
+        if (userId == null || userId <= 0) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return;
         }
+
+        boolean changed = users.changePassword(userId, currentPassword, newPassword);
 
         if (!changed) {
             request.setAttribute("role", role);

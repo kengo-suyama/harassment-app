@@ -1,12 +1,13 @@
 package com.example.harassment.servlet;
 
-import com.example.harassment.repository.MemoryConsultationRepository;
+import com.example.harassment.repository.ConsultationRepository;
+import com.example.harassment.repository.RepositoryProvider;
 
 import javax.servlet.http.*;
 import java.io.IOException;
 
 public class AdminStatusServlet extends HttpServlet {
-    private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
+    private static final ConsultationRepository repo = RepositoryProvider.get();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -20,7 +21,7 @@ public class AdminStatusServlet extends HttpServlet {
 
         int id = 0;
         try { id = Integer.parseInt(request.getParameter("id")); } catch (Exception ignored) {}
-        String status = request.getParameter("status"); // NEW/CHECKING/IN_PROGRESS/DONE
+        String status = request.getParameter("status"); // UNCONFIRMED/CONFIRMED/REVIEWING/IN_PROGRESS/DONE
 
         repo.setStatus(id, status);
 

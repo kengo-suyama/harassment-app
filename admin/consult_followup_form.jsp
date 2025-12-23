@@ -51,7 +51,7 @@
                     <h2 class="h5 mb-3">対応内容の記録</h2>
                     <p class="text-muted small">
                         面談の実施状況、日時、対応者、相談者への説明内容などを具体的に記録してください。<br>
-                        「一時保存」は途中メモ、「提出」はマスターに共有される最終版です。
+                        「一時保存」は途中メモ、「提出」は全権管理者に共有される最終版です。
                     </p>
 
                     <form action="<%= request.getContextPath() %>/admin/consult/followup/save" method="post">

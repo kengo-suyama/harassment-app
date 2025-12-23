@@ -1,12 +1,13 @@
 package com.example.harassment.servlet;
 
-import com.example.harassment.repository.MemoryConsultationRepository;
+import com.example.harassment.repository.ConsultationRepository;
+import com.example.harassment.repository.RepositoryProvider;
 
 import javax.servlet.http.*;
 import java.io.IOException;
 
 public class AdminChatSendServlet extends HttpServlet {
-    private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
+    private static final ConsultationRepository repo = RepositoryProvider.get();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

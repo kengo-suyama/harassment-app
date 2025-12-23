@@ -8,14 +8,14 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>マスター - 相談一覧</title>
+  <title>全権管理者 - 相談一覧</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 <nav class="navbar navbar-dark bg-dark mb-4">
   <div class="container-fluid">
-    <a class="navbar-brand" href="<%= request.getContextPath() %>/">ハラスメント相談システム</a>
+    <a class="navbar-brand" href="<%= request.getContextPath() %>/master/consult/list">全権管理者</a>
     <a class="btn btn-outline-light btn-sm" href="<%= request.getContextPath() %>/master/logout">ログアウト</a>
   </div>
 </nav>
@@ -23,7 +23,7 @@
 <div class="container">
   <div class="card shadow-sm mb-3">
     <div class="card-body">
-      <h1 class="h6">相談一覧（マスター）</h1>
+      <h1 class="h6">相談一覧（全権管理者）</h1>
 
       <form class="row g-2" method="get" action="<%= request.getContextPath() %>/master/consult/list">
         <div class="col-md-3">
@@ -86,6 +86,10 @@
         </table>
       </div>
     </div>
+  </div>
+
+  <div class="mt-3">
+    <a class="btn btn-outline-secondary" href="<%= request.getContextPath() %>/">トップへ戻る</a>
   </div>
 </div>
 </body>

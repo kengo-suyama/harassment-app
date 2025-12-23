@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.example.harassment.model.Consultation" %>
 <%@ page import="com.example.harassment.model.ChatMessage" %>
 <!DOCTYPE html>
@@ -54,16 +54,21 @@
     <div class="card-body">
       <%
         java.util.List<ChatMessage> msgs = c.getChatMessages();
-        boolean hasNew = false;
-        if (msgs != null && !msgs.isEmpty()) {
-          ChatMessage last = msgs.get(msgs.size() - 1);
-          hasNew = !"REPORTER".equals(last.getSenderRole());
-        }
       %>
       <h2 class="h6">
         連絡（簡易チャット）
-        <% if (hasNew) { %><span class="badge bg-warning text-dark ms-2">新着</span><% } %>
+        <% if (c.getUnreadForReporter() > 0) { %>
+          <span class="badge bg-warning text-dark ms-2">未読 <%= c.getUnreadForReporter() %></span>
+        <% } %>
       </h2>
+
+      <%
+        if (c.getLatestChatMessage() != null && !c.getLatestChatMessage().isEmpty()) {
+      %>
+        <div class="small text-muted mb-2">最新メッセージ：<%= c.getLatestChatMessage() %></div>
+      <%
+        }
+      %>
 
       <div class="border rounded p-2 mb-3 bg-white" style="max-height: 320px; overflow:auto;">
         <%
@@ -86,44 +91,46 @@
 
       <form method="post" action="<%= request.getContextPath() %>/consult/chat/send">
         <input type="hidden" name="id" value="<%= c.getId() %>">
-        <input type="hidden" name="key" value="<%= c.getLookupKey() %>">
+        <input type="hidden" name="token" value="<%= c.getLookupKey() %>">
 
         <div class="mb-2">
-          <textarea name="message" class="form-control" rows="3" placeholder="確認したいこと、面談希望日時など"></textarea>
+          <textarea name="text" class="form-control" rows="3" placeholder="確認したいこと、面談希望日時など"></textarea>
         </div>
         <button class="btn btn-primary" type="submit">送信</button>
-        <a class="btn btn-outline-secondary ms-2" href="<%= request.getContextPath() %>/consult/status">別の受付番号で確認</a>
+        <a class="btn btn-outline-secondary ms-2" href="<%= request.getContextPath() %>/consult/status">別の照合キーで確認</a>
       </form>
     </div>
   </div>
 
-  <!-- 満足度（DONE のとき表示） -->
+  <!-- 評価（DONE のとき表示） -->
   <%
     boolean done = "DONE".equals(c.getStatus());
-    boolean already = c.getSatisfactionScore() > 0;
     if (done) {
   %>
   <div class="card shadow-sm mb-5">
     <div class="card-body">
-      <h2 class="h6">今回の対応の満足度（完了後）</h2>
+      <h2 class="h6">今回の対応の評価（完了後）</h2>
+      <p class="text-muted small mb-3">
+        入力した評価は管理者には共有されず、全権管理者のみが確認できます。
+      </p>
 
       <%
-        if (already) {
+        if (c.isRated()) {
       %>
         <div class="alert alert-success mb-0">
-          送信済みです：<strong><%= c.getSatisfactionScoreLabel() %></strong>
-          <div class="small text-muted">記入日時：<%= c.getSatisfactionAt() != null ? c.getSatisfactionAt() : "" %></div>
+          送信済みです：★ <strong><%= c.getReporterRating() %></strong> / 5
+          <pre class="mb-0"><%= c.getReporterFeedback() != null ? c.getReporterFeedback() : "" %></pre>
         </div>
       <%
         } else {
       %>
-      <form method="post" action="<%= request.getContextPath() %>/consult/satisfaction/submit">
+      <form method="post" action="<%= request.getContextPath() %>/consult/eval/submit">
         <input type="hidden" name="id" value="<%= c.getId() %>">
-        <input type="hidden" name="key" value="<%= c.getLookupKey() %>">
+        <input type="hidden" name="token" value="<%= c.getLookupKey() %>">
 
         <div class="mb-2">
-          <label class="form-label">満足度（1〜5）</label>
-          <select name="score" class="form-select" required>
+          <label class="form-label">評価（1?5）</label>
+          <select name="rating" class="form-select" required>
             <option value="">選択してください</option>
             <option value="1">1（不満）</option>
             <option value="2">2（やや不満）</option>
@@ -135,7 +142,7 @@
 
         <div class="mb-3">
           <label class="form-label">コメント（任意）</label>
-          <textarea name="comment" class="form-control" rows="3"></textarea>
+          <textarea name="feedback" class="form-control" rows="3"></textarea>
         </div>
 
         <button class="btn btn-success" type="submit">送信する</button>
@@ -153,3 +160,4 @@
 
 </body>
 </html>
+

@@ -4,7 +4,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>マスター画面 - 対応結果一覧</title>
+    <title>全権管理者画面 - 対応結果一覧</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -16,7 +16,7 @@
         <a href="<%= request.getContextPath() %>/" class="navbar-brand">
             ハラスメント相談システム
         </a>
-        <span class="navbar-text text-white">マスター画面</span>
+        <span class="navbar-text text-white">全権管理者画面</span>
     </div>
 </nav>
 

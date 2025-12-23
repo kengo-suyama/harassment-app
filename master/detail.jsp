@@ -7,14 +7,14 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>マスター - 相談詳細</title>
+  <title>全権管理者 - 相談詳細</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 <nav class="navbar navbar-dark bg-dark mb-4">
   <div class="container-fluid">
-    <a class="navbar-brand" href="<%= request.getContextPath() %>/master/consult/list">マスター</a>
+    <a class="navbar-brand" href="<%= request.getContextPath() %>/master/consult/list">全権管理者</a>
     <a class="btn btn-outline-light btn-sm" href="<%= request.getContextPath() %>/master/logout">ログアウト</a>
   </div>
 </nav>

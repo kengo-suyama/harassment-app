@@ -29,17 +29,12 @@
 
       <div class="card shadow-sm">
         <div class="card-body">
-          <h1 class="h5">受付番号と照合キーを入力</h1>
+          <h1 class="h5">照合キーを入力</h1>
 
           <form method="post" action="<%= request.getContextPath() %>/consult/status">
             <div class="mb-3">
-              <label class="form-label">受付番号（ID）</label>
-              <input type="number" name="id" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
               <label class="form-label">照合キー</label>
-              <input type="text" name="key" class="form-control" required placeholder="例：A1B2C3D4">
+              <input type="text" name="token" class="form-control" required placeholder="例：A1B2C3D4EF5G6H7I">
             </div>
 
             <button class="btn btn-primary" type="submit">確認する</button>

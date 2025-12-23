@@ -6,7 +6,8 @@
     String error = (String) request.getAttribute("errorMessage");
 
     // 旧入力値（失敗時に戻ってきた時用）
-    String user = request.getParameter("username");
+    String user = request.getParameter("email");
+    if (user == null) user = request.getParameter("username");
     if (user == null) user = "";
 %>
 <!DOCTYPE html>
@@ -45,9 +46,9 @@
           <form method="post" action="<%= ctx %>/admin/login">
 
             <div class="mb-3">
-              <label class="form-label">ユーザーID</label>
-              <input type="text"
-                     name="username"
+            <label class="form-label">メールアドレス</label>
+            <input type="text"
+                     name="email"
                      class="form-control"
                      autocomplete="username"
                      value="<%= user %>"

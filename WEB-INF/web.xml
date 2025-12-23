@@ -192,6 +192,130 @@
         <url-pattern>/master/chat/send</url-pattern>
     </servlet-mapping>
 
+    <!-- Consult status -->
+    <servlet>
+        <servlet-name>ConsultStatusServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.ConsultStatusServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConsultStatusServlet</servlet-name>
+        <url-pattern>/consult/status</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ConsultStatusServlet</servlet-name>
+        <url-pattern>/consult/status/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Consult my page (legacy) -->
+    <servlet>
+        <servlet-name>ConsultMyServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.ConsultMyServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConsultMyServlet</servlet-name>
+        <url-pattern>/consult/my</url-pattern>
+    </servlet-mapping>
+
+    <!-- Consult evaluation -->
+    <servlet>
+        <servlet-name>ConsultEvaluationSubmitServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.ConsultEvaluationSubmitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConsultEvaluationSubmitServlet</servlet-name>
+        <url-pattern>/consult/eval/submit</url-pattern>
+    </servlet-mapping>
+
+    <!-- Consult satisfaction -->
+    <servlet>
+        <servlet-name>ConsultSatisfactionSubmitServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.ConsultSatisfactionSubmitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConsultSatisfactionSubmitServlet</servlet-name>
+        <url-pattern>/consult/satisfaction/submit</url-pattern>
+    </servlet-mapping>
+
+    <!-- Admin status update -->
+    <servlet>
+        <servlet-name>AdminStatusServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminStatusServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminStatusServlet</servlet-name>
+        <url-pattern>/admin/consult/status</url-pattern>
+    </servlet-mapping>
+
+    <!-- Admin status update (legacy) -->
+    <servlet>
+        <servlet-name>AdminStatusUpdateServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminStatusUpdateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminStatusUpdateServlet</servlet-name>
+        <url-pattern>/admin/consult/status/update</url-pattern>
+    </servlet-mapping>
+
+    <!-- Admin logout -->
+    <servlet>
+        <servlet-name>AdminLogoutServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminLogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminLogoutServlet</servlet-name>
+        <url-pattern>/admin/logout</url-pattern>
+    </servlet-mapping>
+
+    <!-- Admin followup edit -->
+    <servlet>
+        <servlet-name>AdminFollowupEditServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminFollowupEditServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminFollowupEditServlet</servlet-name>
+        <url-pattern>/admin/consult/followup/edit</url-pattern>
+    </servlet-mapping>
+
+    <!-- Admin followup add -->
+    <servlet>
+        <servlet-name>AdminFollowUpAddServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminFollowUpAddServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminFollowUpAddServlet</servlet-name>
+        <url-pattern>/admin/consult/followup/add</url-pattern>
+    </servlet-mapping>
+
+    <!-- Admin consult confirm -->
+    <servlet>
+        <servlet-name>AdminConsultConfirmServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.AdminConsultConfirmServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminConsultConfirmServlet</servlet-name>
+        <url-pattern>/admin/consult/confirm</url-pattern>
+    </servlet-mapping>
+
+    <!-- Password change -->
+    <servlet>
+        <servlet-name>PasswordChangeServlet</servlet-name>
+        <servlet-class>com.example.harassment.servlet.PasswordChangeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PasswordChangeServlet</servlet-name>
+        <url-pattern>/password/change</url-pattern>
+    </servlet-mapping>
+
+    <!-- DB test -->
+    <servlet>
+        <servlet-name>DbTestServlet</servlet-name>
+        <servlet-class>DbTestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DbTestServlet</servlet-name>
+        <url-pattern>/dbtest</url-pattern>
+    </servlet-mapping>
+
     <resource-ref>
         <description>Mail Session for SMTP</description>
         <res-ref-name>mail/Session</res-ref-name>

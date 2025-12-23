@@ -35,6 +35,9 @@
             <th>相談日</th>
             <th>氏名</th>
             <th>概要</th>
+            <th>進捗</th>
+            <th>未読</th>
+            <th>最新メッセージ</th>
             <th>確認</th>
             <th>操作</th>
         </tr>
@@ -44,7 +47,7 @@
             if (consultations == null || consultations.isEmpty()) {
         %>
         <tr>
-            <td colspan="6" class="text-center text-muted">
+            <td colspan="9" class="text-center text-muted">
                 まだ相談は登録されていません。
             </td>
         </tr>
@@ -57,6 +60,29 @@
             <td><%= c.getSheetDate() %></td>
             <td><%= c.getConsultantName() %></td>
             <td><%= c.getSummary() %></td>
+            <td>
+                <form method="post" action="<%= request.getContextPath() %>/admin/consult/status" class="d-flex gap-1">
+                    <input type="hidden" name="id" value="<%= c.getId() %>">
+                    <select class="form-select form-select-sm" name="status">
+                        <option value="UNCONFIRMED" <%= ("UNCONFIRMED".equals(c.getStatus()) || "NEW".equals(c.getStatus()))?"selected":"" %>>未確認</option>
+                        <option value="CONFIRMED" <%= ("CONFIRMED".equals(c.getStatus()) || "CHECKING".equals(c.getStatus()))?"selected":"" %>>確認</option>
+                        <option value="REVIEWING" <%= "REVIEWING".equals(c.getStatus())?"selected":"" %>>対応検討中</option>
+                        <option value="IN_PROGRESS" <%= "IN_PROGRESS".equals(c.getStatus())?"selected":"" %>>対応中</option>
+                        <option value="DONE" <%= "DONE".equals(c.getStatus())?"selected":"" %>>対応済</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-outline-primary">更新</button>
+                </form>
+            </td>
+            <td>
+                <% if (c.getUnreadForAdmin() > 0) { %>
+                    <span class="badge bg-warning text-dark"><%= c.getUnreadForAdmin() %></span>
+                <% } else { %>
+                    <span class="text-muted small">0</span>
+                <% } %>
+            </td>
+            <td class="small">
+                <%= c.getLatestChatMessage() != null ? c.getLatestChatMessage() : "" %>
+            </td>
             <td>
                 <%
                     if (c.isAdminChecked()) {

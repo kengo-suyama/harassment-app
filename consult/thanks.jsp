@@ -53,6 +53,26 @@
             </div>
           </div>
         </div>
+
+        <div class="card shadow-sm mt-3">
+          <div class="card-header">相談者専用ページ</div>
+          <div class="card-body">
+            <p class="mb-2">以下のURLから相談状況を確認できます。メール等で保存してください。</p>
+            <div class="mb-2">
+              <div class="text-muted small">照合キー</div>
+              <div><strong><%= c.getAccessKey() %></strong></div>
+            </div>
+            <div class="mb-2">
+              <div class="text-muted small">専用URL</div>
+              <div>
+                <a href="<%= ctx %>/consult/status/<%= c.getAccessKey() %>">
+                  <%= ctx %>/consult/status/<%= c.getAccessKey() %>
+                </a>
+              </div>
+            </div>
+            <a class="btn btn-outline-secondary btn-sm" href="<%= ctx %>/">トップへ戻る</a>
+          </div>
+        </div>
       <% } %>
 
       <% if (statusUrl != null && !statusUrl.isEmpty()) { %>

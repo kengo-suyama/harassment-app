@@ -29,15 +29,28 @@
   <%
     } else {
       List<ChatMessage> msgs = c.getChatMessages();
-      boolean hasNew = false;
-      if (msgs != null && !msgs.isEmpty()) {
-        ChatMessage last = msgs.get(msgs.size() - 1);
-        hasNew = "REPORTER".equals(last.getSenderRole());
-      }
   %>
     <div class="card shadow-sm mb-3">
       <div class="card-body">
         <h1 class="h5 mb-3">相談詳細（ID: <%= c.getId() %>）</h1>
+        <div class="mb-3">
+          <div class="small text-muted">現在の進捗</div>
+          <form class="row g-2" method="post" action="<%= request.getContextPath() %>/admin/consult/status">
+            <input type="hidden" name="id" value="<%= c.getId() %>">
+            <div class="col-8">
+              <select class="form-select" name="status">
+                <option value="UNCONFIRMED" <%= ("UNCONFIRMED".equals(c.getStatus()) || "NEW".equals(c.getStatus()))?"selected":"" %>>未確認</option>
+                <option value="CONFIRMED" <%= ("CONFIRMED".equals(c.getStatus()) || "CHECKING".equals(c.getStatus()))?"selected":"" %>>確認</option>
+                <option value="REVIEWING" <%= "REVIEWING".equals(c.getStatus())?"selected":"" %>>対応検討中</option>
+                <option value="IN_PROGRESS" <%= "IN_PROGRESS".equals(c.getStatus())?"selected":"" %>>対応中</option>
+                <option value="DONE" <%= "DONE".equals(c.getStatus())?"selected":"" %>>対応済</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <button class="btn btn-outline-primary w-100" type="submit">更新</button>
+            </div>
+          </form>
+        </div>
 
         <dl class="row mb-0">
           <dt class="col-sm-3">記入日</dt><dd class="col-sm-9"><%= c.getSheetDate() %></dd>
@@ -72,7 +85,9 @@
           <div class="card-body">
             <h2 class="h6 mb-3">
               相談者とのチャット
-              <% if (hasNew) { %><span class="badge bg-warning text-dark ms-2">新着</span><% } %>
+              <% if (c.getUnreadForAdmin() > 0) { %>
+                <span class="badge bg-warning text-dark ms-2">未読 <%= c.getUnreadForAdmin() %></span>
+              <% } %>
             </h2>
             <div class="border rounded p-2 mb-3 bg-white" style="max-height: 320px; overflow:auto;">
               <%
@@ -115,7 +130,7 @@
               </div>
             </form>
             <hr>
-            <div class="small text-muted">確定内容（マスター画面に反映）</div>
+            <div class="small text-muted">確定内容（全権管理者画面に反映）</div>
             <pre class="mb-0"><%= c.getFollowUpAction()!=null?c.getFollowUpAction():"（未確定）" %></pre>
           </div>
         </div>

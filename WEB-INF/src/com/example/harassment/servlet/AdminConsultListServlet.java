@@ -1,6 +1,7 @@
 package com.example.harassment.servlet;
 
-import com.example.harassment.repository.MemoryConsultationRepository;
+import com.example.harassment.repository.ConsultationRepository;
+import com.example.harassment.repository.RepositoryProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -8,7 +9,7 @@ import java.io.IOException;
 
 public class AdminConsultListServlet extends HttpServlet {
 
-    private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
+    private static final ConsultationRepository repo = RepositoryProvider.get();
 
     private boolean isAdmin(HttpServletRequest request) {
         HttpSession s = request.getSession(false);

@@ -1,6 +1,7 @@
 package com.example.harassment.servlet;
 
-import com.example.harassment.repository.MemoryConsultationRepository;
+import com.example.harassment.repository.ConsultationRepository;
+import com.example.harassment.repository.RepositoryProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -8,14 +9,20 @@ import java.io.IOException;
 
 public class AdminConsultCheckServlet extends HttpServlet {
 
-    private static final MemoryConsultationRepository repo =
-            MemoryConsultationRepository.getInstance();
+    private static final ConsultationRepository repo =
+            RepositoryProvider.get();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+
+        HttpSession session = request.getSession(false);
+        if (!LoginUtil.isAdmin(session)) {
+            response.sendRedirect(request.getContextPath() + "/admin/login");
+            return;
+        }
 
         String idStr = request.getParameter("id");
         int id = 0;
@@ -33,6 +40,11 @@ public class AdminConsultCheckServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
+        HttpSession session = request.getSession(false);
+        if (!LoginUtil.isAdmin(session)) {
+            response.sendRedirect(request.getContextPath() + "/admin/login");
+            return;
+        }
         response.sendRedirect(request.getContextPath() + "/admin/consult/list");
     }
 }

@@ -1,14 +1,15 @@
 package com.example.harassment.servlet;
 
 import com.example.harassment.model.Consultation;
-import com.example.harassment.repository.MemoryConsultationRepository;
+import com.example.harassment.repository.ConsultationRepository;
+import com.example.harassment.repository.RepositoryProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
 
 public class MasterConsultPrintServlet extends HttpServlet {
-    private static final MemoryConsultationRepository repo = MemoryConsultationRepository.getInstance();
+    private static final ConsultationRepository repo = RepositoryProvider.get();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

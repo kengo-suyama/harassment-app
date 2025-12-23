@@ -1,6 +1,7 @@
 package com.example.harassment.servlet;
 
-import com.example.harassment.repository.MemoryConsultationRepository;
+import com.example.harassment.repository.ConsultationRepository;
+import com.example.harassment.repository.RepositoryProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -8,8 +9,8 @@ import java.io.IOException;
 
 public class AdminFollowUpAddServlet extends HttpServlet {
 
-    private static final MemoryConsultationRepository repository =
-        MemoryConsultationRepository.getInstance();
+    private static final ConsultationRepository repository =
+        RepositoryProvider.get();
 
     @Override
     protected void doPost(HttpServletRequest request,
@@ -17,6 +18,12 @@ public class AdminFollowUpAddServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+
+        HttpSession session = request.getSession(false);
+        if (!LoginUtil.isAdmin(session)) {
+            response.sendRedirect(request.getContextPath() + "/admin/login");
+            return;
+        }
 
         int id = Integer.parseInt(request.getParameter("id"));
         String category = request.getParameter("category");

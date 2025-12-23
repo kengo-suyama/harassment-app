@@ -55,6 +55,18 @@ public class Consultation {
     // ====== チャット（相談者↔管理者/マスター） ======
     private List<ChatMessage> chatMessages = new ArrayList<>();
 
+    // ====== 対応履歴 ======
+    private List<FollowUpRecord> followUpHistory = new ArrayList<>();
+
+    // ====== チャット通知 ======
+    private int unreadForReporter;
+    private int unreadForAdmin;
+    private String latestChatMessage;
+    private String latestChatSenderRole;
+    private LocalDateTime latestChatAt;
+    private LocalDateTime lastReporterReadAt;
+    private LocalDateTime lastAdminReadAt;
+
     // ====== 相談者の最終評価 ======
     // DONE のときだけ入力する想定
     private int reporterRating;              // 1〜5（未評価は 0）
@@ -129,7 +141,6 @@ public class Consultation {
     public String getAccessKey() { return accessKey; }
     public void setAccessKey(String accessKey) { this.accessKey = accessKey; }
 
-    // JSP compatibility
     public String getLookupKey() { return accessKey; }
 
     // ====== JSPが呼んでいる名前に合わせた getter 群 ======
@@ -154,6 +165,36 @@ public class Consultation {
         this.chatMessages = (chatMessages != null) ? chatMessages : new ArrayList<>();
     }
 
+    public List<FollowUpRecord> getFollowUpHistory() {
+        if (followUpHistory == null) followUpHistory = new ArrayList<>();
+        return followUpHistory;
+    }
+
+    public void setFollowUpHistory(List<FollowUpRecord> followUpHistory) {
+        this.followUpHistory = (followUpHistory != null) ? followUpHistory : new ArrayList<>();
+    }
+
+    public int getUnreadForReporter() { return unreadForReporter; }
+    public void setUnreadForReporter(int unreadForReporter) { this.unreadForReporter = unreadForReporter; }
+
+    public int getUnreadForAdmin() { return unreadForAdmin; }
+    public void setUnreadForAdmin(int unreadForAdmin) { this.unreadForAdmin = unreadForAdmin; }
+
+    public String getLatestChatMessage() { return latestChatMessage; }
+    public void setLatestChatMessage(String latestChatMessage) { this.latestChatMessage = latestChatMessage; }
+
+    public String getLatestChatSenderRole() { return latestChatSenderRole; }
+    public void setLatestChatSenderRole(String latestChatSenderRole) { this.latestChatSenderRole = latestChatSenderRole; }
+
+    public LocalDateTime getLatestChatAt() { return latestChatAt; }
+    public void setLatestChatAt(LocalDateTime latestChatAt) { this.latestChatAt = latestChatAt; }
+
+    public LocalDateTime getLastReporterReadAt() { return lastReporterReadAt; }
+    public void setLastReporterReadAt(LocalDateTime lastReporterReadAt) { this.lastReporterReadAt = lastReporterReadAt; }
+
+    public LocalDateTime getLastAdminReadAt() { return lastAdminReadAt; }
+    public void setLastAdminReadAt(LocalDateTime lastAdminReadAt) { this.lastAdminReadAt = lastAdminReadAt; }
+
     // ====== 評価（JSPが呼んでいるメソッド） ======
 
     public boolean isRated() {
@@ -175,10 +216,14 @@ public class Consultation {
     public String getStatusLabel() {
         if (status == null || status.trim().isEmpty()) return "";
         switch (status) {
-            case "NEW": return "未対応";
-            case "CHECKING": return "確認中";
+            case "UNCONFIRMED": return "未確認";
+            case "CONFIRMED": return "確認";
+            case "REVIEWING": return "対応検討中";
             case "IN_PROGRESS": return "対応中";
-            case "DONE": return "対応完了";
+            case "DONE": return "対応済";
+            // 旧ステータス互換
+            case "NEW": return "未確認";
+            case "CHECKING": return "確認";
             default: return status;
         }
     }
@@ -301,6 +346,18 @@ public class Consultation {
 
     public void setSatisfactionAt(java.time.LocalDateTime satisfactionAt) {
         this.satisfactionAt = satisfactionAt;
+    }
+
+    public String getSatisfactionScoreLabel() {
+        if (satisfactionScore <= 0) return "";
+        switch (satisfactionScore) {
+            case 1: return "1（不満）";
+            case 2: return "2（やや不満）";
+            case 3: return "3（普通）";
+            case 4: return "4（満足）";
+            case 5: return "5（とても満足）";
+            default: return String.valueOf(satisfactionScore);
+        }
     }
 
 }
