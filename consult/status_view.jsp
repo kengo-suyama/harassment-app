@@ -46,7 +46,10 @@
         </dd>
 
         <dt class="col-sm-4">相談概要</dt>
-        <dd class="col-sm-8"><pre class="mb-0"><%= c.getSummary() != null ? c.getSummary() : "" %></pre></dd>
+        <dd class="col-sm-8">
+          <div class="mb-1"><%= c.getSummaryCategoryLabel() != null ? c.getSummaryCategoryLabel() : "" %></div>
+          <pre class="mb-0"><%= c.getSummaryDetail() != null ? c.getSummaryDetail() : "" %></pre>
+        </dd>
       </dl>
     </div>
   </div>

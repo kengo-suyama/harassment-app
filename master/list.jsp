@@ -27,7 +27,7 @@
     if ("oldest".equals(sort)) {
       sortLabel = "古い順";
     } else if ("mental_desc".equals(sort)) {
-      sortLabel = "しんどさ高い順";
+      sortLabel = "しんどさ順";
     } else if ("unconfirmed".equals(sort)) {
       sortLabel = "未確認順";
     }
@@ -51,7 +51,7 @@
           <select class="form-select" name="sort">
             <option value="newest" <%= (sort == null || sort.isEmpty() || "newest".equals(sort)) ? "selected" : "" %>>新しい順</option>
             <option value="oldest" <%= "oldest".equals(sort) ? "selected" : "" %>>古い順</option>
-            <option value="mental_desc" <%= "mental_desc".equals(sort) ? "selected" : "" %>>しんどさ高い順</option>
+            <option value="mental_desc" <%= "mental_desc".equals(sort) ? "selected" : "" %>>しんどさ順</option>
             <option value="unconfirmed" <%= "unconfirmed".equals(sort) ? "selected" : "" %>>未確認順</option>
           </select>
         </div>
@@ -64,7 +64,7 @@
   </div>
 
   <div class="d-flex gap-2 mb-3">
-    <a class="btn btn-outline-primary" href="<%= request.getContextPath() %>/master/report">年間レポート</a>
+    <a class="btn btn-outline-primary" href="<%= request.getContextPath() %>/master/report">年間/月間レポート</a>
   </div>
 
   <div class="card shadow-sm">
@@ -73,22 +73,23 @@
         <table class="table table-sm align-middle">
           <thead>
             <tr>
-              <th>ID</th><th>記入日</th><th>氏名</th><th>状況</th><th>しんどさ</th><th></th>
+              <th>ID</th><th>相談日</th><th>氏名</th><th>概要（分類）</th><th>状況</th><th>しんどさ</th><th></th>
             </tr>
           </thead>
           <tbody>
           <%
             if (list == null || list.isEmpty()) {
           %>
-            <tr><td colspan="6" class="text-muted">データがありません。</td></tr>
+            <tr><td colspan="7" class="text-muted">データがありません。</td></tr>
           <%
             } else {
               for (Consultation c : list) {
           %>
             <tr>
               <td><%= c.getId() %></td>
-              <td><%= c.getSheetDate() %></td>
-              <td><%= (c.getConsultantName()==null||c.getConsultantName().isEmpty())?"（未記入）":c.getConsultantName() %></td>
+              <td><%= c.getSheetDate() != null ? c.getSheetDate() : "" %></td>
+              <td><%= c.getConsultantName() != null ? c.getConsultantName() : "" %></td>
+              <td><%= (c.getSummaryCategoryLabel() != null && !c.getSummaryCategoryLabel().isEmpty()) ? c.getSummaryCategoryLabel() : "" %></td>
               <td><%= c.getStatusLabel() %></td>
               <td><%= c.getMentalScaleLabel() %></td>
               <td>

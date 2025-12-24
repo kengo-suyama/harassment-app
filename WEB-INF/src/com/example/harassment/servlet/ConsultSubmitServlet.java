@@ -37,7 +37,10 @@ public class ConsultSubmitServlet extends HttpServlet {
         c.setSheetDate(sheetDate);
 
         c.setConsultantName(request.getParameter("consultantName"));
-        c.setSummary(request.getParameter("summary"));
+        String major = request.getParameter("summaryMajor");
+        String sub = request.getParameter("summarySub");
+        String detail = request.getParameter("summaryDetail");
+        c.setSummary(buildSummary(major, sub, detail));
 
         c.setReportedExists(request.getParameter("reportedExists"));
         c.setReportedPerson(request.getParameter("reportedPerson"));
@@ -72,5 +75,21 @@ public class ConsultSubmitServlet extends HttpServlet {
 
         request.setAttribute("consultation", c);
         request.getRequestDispatcher("/consult/thanks.jsp").forward(request, response);
+    }
+
+    private String buildSummary(String major, String sub, String detail) {
+        String m = safe(major);
+        String s = safe(sub);
+        String d = safe(detail);
+        if (m.isEmpty() && s.isEmpty()) return d;
+        String category = m;
+        if (!s.isEmpty()) {
+            category = m.isEmpty() ? s : (m + " / " + s);
+        }
+        return "CATEGORY: " + category + "\nDETAIL:\n" + d;
+    }
+
+    private String safe(String v) {
+        return v == null ? "" : v.trim();
     }
 }

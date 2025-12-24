@@ -29,7 +29,9 @@
 
         String sheetDate = request.getParameter("sheetDate");
         String consultantName = request.getParameter("consultantName");
-        String summary = request.getParameter("summary");
+        String summaryMajor = request.getParameter("summaryMajor");
+        String summarySub = request.getParameter("summarySub");
+        String summaryDetail = request.getParameter("summaryDetail");
 
         String reportedExists = request.getParameter("reportedExists");
         String reportedPerson = request.getParameter("reportedPerson");
@@ -94,7 +96,8 @@
 
             <dt class="col-sm-3">相談概要</dt>
             <dd class="col-sm-9">
-              <pre class="mb-0"><%= summary != null ? summary : "" %></pre>
+              <div class="mb-1"><%= (summaryMajor != null ? summaryMajor : "") %><%= (summarySub != null && !summarySub.isEmpty()) ? (" / " + summarySub) : "" %></div>
+              <pre class="mb-0"><%= summaryDetail != null ? summaryDetail : "" %></pre>
             </dd>
 
             <dt class="col-sm-3 mt-3">発生後の状況</dt>
@@ -160,7 +163,9 @@
       <form method="post" action="<%= request.getContextPath() %>/consult/form">
         <input type="hidden" name="sheetDate" value="<%= sheetDate != null ? sheetDate : "" %>">
         <input type="hidden" name="consultantName" value="<%= consultantName != null ? consultantName : "" %>">
-        <input type="hidden" name="summary" value="<%= summary != null ? summary : "" %>">
+        <input type="hidden" name="summaryMajor" value="<%= summaryMajor != null ? summaryMajor : "" %>">
+        <input type="hidden" name="summarySub" value="<%= summarySub != null ? summarySub : "" %>">
+        <input type="hidden" name="summaryDetail" value="<%= summaryDetail != null ? summaryDetail : "" %>">
 
         <input type="hidden" name="reportedExists" value="<%= reportedExists != null ? reportedExists : "" %>">
         <input type="hidden" name="reportedPerson" value="<%= reportedPerson != null ? reportedPerson : "" %>">
@@ -195,7 +200,9 @@
       <form method="post" action="<%= request.getContextPath() %>/consult/submit">
         <input type="hidden" name="sheetDate" value="<%= sheetDate != null ? sheetDate : "" %>">
         <input type="hidden" name="consultantName" value="<%= consultantName != null ? consultantName : "" %>">
-        <input type="hidden" name="summary" value="<%= summary != null ? summary : "" %>">
+        <input type="hidden" name="summaryMajor" value="<%= summaryMajor != null ? summaryMajor : "" %>">
+        <input type="hidden" name="summarySub" value="<%= summarySub != null ? summarySub : "" %>">
+        <input type="hidden" name="summaryDetail" value="<%= summaryDetail != null ? summaryDetail : "" %>">
 
         <input type="hidden" name="reportedExists" value="<%= reportedExists != null ? reportedExists : "" %>">
         <input type="hidden" name="reportedPerson" value="<%= reportedPerson != null ? reportedPerson : "" %>">

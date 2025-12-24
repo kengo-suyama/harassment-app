@@ -218,6 +218,16 @@ public class Consultation {
         }
     }
 
+    public String getSummaryCategoryLabel() {
+        SummaryParts parts = parseSummary(summary);
+        return parts.category;
+    }
+
+    public String getSummaryDetail() {
+        SummaryParts parts = parseSummary(summary);
+        return parts.detail;
+    }
+
     public String getReportedExistsLabel() {
         if (reportedExists == null || reportedExists.isEmpty()) return "";
         switch (reportedExists) {
@@ -312,6 +322,36 @@ public class Consultation {
             case 4: return "4（満足）";
             case 5: return "5（とても満足）";
             default: return String.valueOf(satisfactionScore);
+        }
+    }
+
+    private static SummaryParts parseSummary(String s) {
+        if (s == null || s.trim().isEmpty()) return new SummaryParts("", "");
+        String text = s.trim();
+        String category = "";
+        String detail = text;
+        if (text.startsWith("CATEGORY:")) {
+            int lineEnd = text.indexOf('\n');
+            if (lineEnd < 0) lineEnd = text.length();
+            category = text.substring("CATEGORY:".length(), lineEnd).trim();
+            int detailPos = text.indexOf("DETAIL:");
+            if (detailPos >= 0) {
+                detail = text.substring(detailPos + "DETAIL:".length()).trim();
+            } else if (lineEnd < text.length()) {
+                detail = text.substring(lineEnd + 1).trim();
+            } else {
+                detail = "";
+            }
+        }
+        return new SummaryParts(category, detail);
+    }
+
+    private static class SummaryParts {
+        final String category;
+        final String detail;
+        SummaryParts(String category, String detail) {
+            this.category = category == null ? "" : category;
+            this.detail = detail == null ? "" : detail;
         }
     }
 }

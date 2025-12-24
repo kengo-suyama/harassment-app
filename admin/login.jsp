@@ -1,11 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
     String ctx = request.getContextPath();
-
-    // サーブレットから渡される想定（無くてもOK）
     String error = (String) request.getAttribute("errorMessage");
-
-    // 旧入力値（失敗時に戻ってきた時用）
     String user = request.getParameter("email");
     if (user == null) user = request.getParameter("username");
     if (user == null) user = "";
@@ -39,15 +35,13 @@
         <div class="card-body">
           <h1 class="h5 mb-3">管理者ログイン</h1>
           <p class="text-muted small mb-4">
-            管理者用のID/パスワードを入力してください。
+            管理者用のログインページです。
           </p>
 
-          <!-- ★ POST先は web.xml の /admin/login に合わせる -->
           <form method="post" action="<%= ctx %>/admin/login">
-
             <div class="mb-3">
-            <label class="form-label">メールアドレス</label>
-            <input type="text"
+              <label class="form-label">メールアドレス</label>
+              <input type="text"
                      name="email"
                      class="form-control"
                      autocomplete="username"
@@ -64,18 +58,17 @@
                      required>
             </div>
 
-          <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-primary">ログイン</button>
-            <a href="<%= ctx %>/admin/password/reset" class="btn btn-outline-secondary">パスワード変更はこちら</a>
-            <a href="<%= ctx %>/" class="btn btn-outline-secondary">トップへ戻る</a>
-          </div>
-
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">ログイン</button>
+              <a href="<%= ctx %>/admin/password/reset" class="btn btn-outline-secondary">パスワード変更はこちら</a>
+              <a href="<%= ctx %>/" class="btn btn-outline-secondary">トップへ戻る</a>
+            </div>
           </form>
         </div>
       </div>
 
       <div class="text-muted small mt-3">
-        ※ ログイン後に管理者一覧へ遷移します。
+        ・ログイン後に管理者画面へ移動します。
       </div>
 
     </div>

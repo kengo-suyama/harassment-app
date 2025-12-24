@@ -146,8 +146,31 @@
                                 どのようなことでお困りですか（概要）
                                 <span class="text-danger">※</span>
                             </label>
-                            <textarea name="summary" rows="5" class="form-control"
-                                      placeholder="例）上司から繰り返し大声で叱責されている"><%= old(request, "summary") %></textarea>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <select class="form-select" name="summaryMajor" id="summaryMajor" data-initial="<%= old(request, "summaryMajor") %>" required>
+                                        <option value="">大分類を選択</option>
+                                        <option value="ハラスメント" <%= "ハラスメント".equals(old(request, "summaryMajor")) ? "selected" : "" %>>ハラスメント</option>
+                                        <option value="人間関係・いじめ" <%= "人間関係・いじめ".equals(old(request, "summaryMajor")) ? "selected" : "" %>>人間関係・いじめ</option>
+                                        <option value="労務（勤務/残業/休暇）" <%= "労務（勤務/残業/休暇）".equals(old(request, "summaryMajor")) ? "selected" : "" %>>労務（勤務/残業/休暇）</option>
+                                        <option value="評価・処遇" <%= "評価・処遇".equals(old(request, "summaryMajor")) ? "selected" : "" %>>評価・処遇</option>
+                                        <option value="不正・コンプラ" <%= "不正・コンプラ".equals(old(request, "summaryMajor")) ? "selected" : "" %>>不正・コンプラ</option>
+                                        <option value="情報・SNS" <%= "情報・SNS".equals(old(request, "summaryMajor")) ? "selected" : "" %>>情報・SNS</option>
+                                        <option value="安全・環境" <%= "安全・環境".equals(old(request, "summaryMajor")) ? "selected" : "" %>>安全・環境</option>
+                                        <option value="顧客/利用者対応（カスハラ等）" <%= "顧客/利用者対応（カスハラ等）".equals(old(request, "summaryMajor")) ? "selected" : "" %>>顧客/利用者対応（カスハラ等）</option>
+                                        <option value="メンタル/健康" <%= "メンタル/健康".equals(old(request, "summaryMajor")) ? "selected" : "" %>>メンタル/健康</option>
+                                        <option value="その他" <%= "その他".equals(old(request, "summaryMajor")) ? "selected" : "" %>>その他</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <select class="form-select" name="summarySub" id="summarySub" data-initial="<%= old(request, "summarySub") %>" required>
+                                        <option value="">カテゴリを選択</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <textarea name="summaryDetail" rows="5" class="form-control mt-2"
+                                      placeholder="例）どこで、だれが、何を、どうしたのか。状況が分かるように記入してください。"><%= old(request, "summaryDetail") %></textarea>
+                            <div class="form-text">選んだ大分類/カテゴリは管理者・全権管理者画面やレポートに反映されます。</div>
                         </div>
                     </div>
                 </div>
@@ -201,6 +224,7 @@
                             <label class="form-label">今のつらさ（1-10）</label>
                             <input type="number" name="mentalScale" min="1" max="10" class="form-control"
                                    value="<%= old(request, "mentalScale").isEmpty() ? "5" : old(request, "mentalScale") %>">
+                            <div class="form-text">10に近いほど深刻な心身状態です。</div>
                         </div>
 
                         <div class="mb-3">
@@ -302,6 +326,145 @@
     </div>
 </div>
 
+<script>
+  (function () {
+    const data = {
+      "ハラスメント": [
+        "セクシュアルハラスメント（セクハラ）",
+        "パワーハラスメント（パワハラ）",
+        "モラルハラスメント（モラハラ）",
+        "マタニティハラスメント（マタハラ）",
+        "パタニティハラスメント（パタハラ）",
+        "ケアハラスメント（介護・看護・通院等への配慮不足）",
+        "エイジハラスメント（年齢）",
+        "ルッキズム（容姿）",
+        "ジェンダーハラスメント（性別役割の押し付け等）",
+        "SOGIハラスメント（性的指向・性自認）",
+        "カスタマーハラスメント（カスハラ：顧客・利用者から）",
+        "アルコールハラスメント（飲酒強要等）",
+        "スモークハラスメント（受動喫煙・喫煙強要）",
+        "テクノロジーハラスメント（IT/スキル差を嘲る、デジタル強要）",
+        "リモートハラスメント（オンラインでの圧・監視・嫌がらせ）"
+      ],
+      "人間関係・いじめ": [
+        "いじめ／嫌がらせ",
+        "無視／仲間外れ",
+        "陰口／悪評の流布",
+        "侮辱・暴言・人格否定",
+        "からかい／嘲笑",
+        "嫌なあだ名・呼び方",
+        "連絡を回さない／情報遮断",
+        "業務から外す／干す",
+        "過剰な監視・詮索",
+        "私生活への過干渉",
+        "チーム内の派閥・対立"
+      ],
+      "労務（勤務/残業/休暇）": [
+        "業務量が過多（キャパ超え）",
+        "不公平な業務配分",
+        "無理な納期・残業強要",
+        "休日出勤の強要",
+        "休憩が取れない",
+        "有給が取れない／取らせない",
+        "早出・サービス残業の強要",
+        "シフトが不公平（希望が通らない等）",
+        "突然のシフト変更",
+        "業務範囲外の仕事の強要",
+        "危険作業の強要／安全配慮不足",
+        "体調不良でも休ませない"
+      ],
+      "評価・処遇": [
+        "不当な評価・査定",
+        "昇給・昇格に不満／不透明",
+        "降格・配置転換が納得できない",
+        "賃金未払い／残業代未払い",
+        "手当・交通費の不支給",
+        "契約更新されない／雇止め不安",
+        "退職強要（辞めろと言われる等）",
+        "懲戒・処分が不当だと感じる",
+        "正社員/非正規で扱いが不公平"
+      ],
+      "不正・コンプラ": [
+        "横領・金銭不正",
+        "会社備品の私物化",
+        "経費不正",
+        "改ざん・虚偽報告",
+        "取引先との癒着",
+        "利益相反",
+        "法令違反（労基/安全/個人情報等）",
+        "ハラスメントの隠蔽",
+        "反社・不適切取引の疑い"
+      ],
+      "情報・SNS": [
+        "個人情報の漏えい／誤送信",
+        "機密情報の持ち出し",
+        "社内チャットでの誹謗中傷",
+        "SNSでの晒し・悪口",
+        "勝手な写真撮影・共有",
+        "監視・盗み見（画面/メール/スマホ）",
+        "パスワードの共有強要"
+      ],
+      "安全・環境": [
+        "職場の衛生が悪い",
+        "温度/騒音/臭い等の環境問題",
+        "休憩室が使えない",
+        "設備不良・故障放置",
+        "安全対策不足（転倒・感染・防災）",
+        "防護具・備品が足りない",
+        "事故・ヒヤリハットが多い"
+      ],
+      "顧客/利用者対応（カスハラ等）": [
+        "利用者・患者からの暴言/暴力",
+        "家族からのクレーム・過剰要求",
+        "セクハラ行為（利用者/患者）",
+        "不当な返金要求・土下座要求等",
+        "ルール無視（面会/撮影/持込）",
+        "脅迫・口コミで脅す"
+      ],
+      "メンタル/健康": [
+        "ストレス・不眠・体調悪化",
+        "メンタル不調（うつ不安等）",
+        "パニック・出社困難",
+        "職場復帰の不安",
+        "産業医/面談希望",
+        "休職/復職の相談"
+      ],
+      "その他": [
+        "どれにも当てはまらない（その他）",
+        "まず話を聞いてほしい（相談のみ）",
+        "匿名で相談したい（匿名希望）",
+        "緊急（今すぐ対応希望）"
+      ]
+    };
+
+    const majorEl = document.getElementById("summaryMajor");
+    const subEl = document.getElementById("summarySub");
+    if (!majorEl || !subEl) return;
+
+    function renderSubs(major, selected) {
+      const options = data[major] || [];
+      subEl.innerHTML = '<option value="">カテゴリを選択</option>';
+      options.forEach(function (label) {
+        const opt = document.createElement("option");
+        opt.value = label;
+        opt.textContent = label;
+        if (selected && selected === label) opt.selected = true;
+        subEl.appendChild(opt);
+      });
+    }
+
+    const initialMajor = majorEl.getAttribute("data-initial") || "";
+    const initialSub = subEl.getAttribute("data-initial") || "";
+    if (initialMajor) {
+      majorEl.value = initialMajor;
+      renderSubs(initialMajor, initialSub);
+    }
+
+    majorEl.addEventListener("change", function () {
+      renderSubs(majorEl.value, "");
+    });
+  })();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

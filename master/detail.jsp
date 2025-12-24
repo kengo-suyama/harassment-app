@@ -35,7 +35,10 @@
       <hr>
       <div><strong>相談日：</strong> <%= c.getSheetDate() != null ? c.getSheetDate() : "" %></div>
       <div><strong>氏名：</strong> <%= c.getConsultantName() != null ? c.getConsultantName() : "" %></div>
-      <div class="mt-2"><strong>概要：</strong><pre class="mb-0"><%= c.getSummary() != null ? c.getSummary() : "" %></pre></div>
+      <div class="mt-2"><strong>概要：</strong>
+        <div class="mb-1"><%= c.getSummaryCategoryLabel() != null ? c.getSummaryCategoryLabel() : "" %></div>
+        <pre class="mb-0"><%= c.getSummaryDetail() != null ? c.getSummaryDetail() : "" %></pre>
+      </div>
 
       <hr>
       <div><strong>相談の有無：</strong> <%= c.getReportedExistsLabel() %></div>

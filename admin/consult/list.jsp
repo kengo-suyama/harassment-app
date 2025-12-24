@@ -82,7 +82,11 @@
             <td><%= c.getId() %></td>
             <td><%= c.getSheetDate() != null ? c.getSheetDate() : "" %></td>
             <td><%= c.getConsultantName() != null ? c.getConsultantName() : "" %></td>
-            <td><%= c.getSummary() != null ? c.getSummary() : "" %></td>
+            <td>
+                <%= (c.getSummaryCategoryLabel() != null && !c.getSummaryCategoryLabel().isEmpty())
+                        ? c.getSummaryCategoryLabel()
+                        : (c.getSummary() != null ? c.getSummary() : "") %>
+            </td>
             <td>
                 <form method="post" action="<%= request.getContextPath() %>/admin/consult/status" class="d-flex gap-1">
                     <input type="hidden" name="id" value="<%= c.getId() %>">

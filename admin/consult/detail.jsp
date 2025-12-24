@@ -55,7 +55,11 @@
         <dl class="row mb-0">
           <dt class="col-sm-3">相談日</dt><dd class="col-sm-9"><%= c.getSheetDate() != null ? c.getSheetDate() : "" %></dd>
           <dt class="col-sm-3">氏名</dt><dd class="col-sm-9"><%= c.getConsultantName() != null ? c.getConsultantName() : "" %></dd>
-          <dt class="col-sm-3">概要</dt><dd class="col-sm-9"><pre class="mb-0"><%= c.getSummary() != null ? c.getSummary() : "" %></pre></dd>
+          <dt class="col-sm-3">概要</dt>
+          <dd class="col-sm-9">
+            <div class="mb-1"><%= c.getSummaryCategoryLabel() != null ? c.getSummaryCategoryLabel() : "" %></div>
+            <pre class="mb-0"><%= c.getSummaryDetail() != null ? c.getSummaryDetail() : "" %></pre>
+          </dd>
 
           <dt class="col-sm-3 mt-3">相談の有無</dt><dd class="col-sm-9 mt-3"><%= c.getReportedExistsLabel() %></dd>
           <dt class="col-sm-3">相談相手</dt><dd class="col-sm-9"><%= c.getReportedPerson() != null ? c.getReportedPerson() : "" %></dd>

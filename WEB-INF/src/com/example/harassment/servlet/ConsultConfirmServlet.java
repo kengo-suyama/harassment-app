@@ -17,8 +17,8 @@ public class ConsultConfirmServlet extends HttpServlet {
         // 下書きを最新化
         DraftUtil.saveDraftToSession(request);
 
-        String summary = request.getParameter("summary");
-        if (summary == null || summary.trim().isEmpty()) {
+        String detail = request.getParameter("summaryDetail");
+        if (detail == null || detail.trim().isEmpty()) {
             request.setAttribute("errorMessage", "「相談内容の概要（※必須）」は必ず入力してください。");
             request.getRequestDispatcher("/consult/form.jsp").forward(request, response);
             return;
