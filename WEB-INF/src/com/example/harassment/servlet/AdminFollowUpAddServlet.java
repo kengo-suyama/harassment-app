@@ -31,6 +31,7 @@ public class AdminFollowUpAddServlet extends HttpServlet {
 
         if (text != null && !text.trim().isEmpty()) {
             repository.addFollowUp(id, "ADMIN", category, text.trim());
+            AuditLogger.log(request, "UPDATE", "CONSULTATION", id, "followup_add");
         }
 
         response.sendRedirect(request.getContextPath() + "/admin/consult/detail?id=" + id);

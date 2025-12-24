@@ -32,6 +32,7 @@ public class AdminConsultCheckServlet extends HttpServlet {
 
         if (id > 0) {
             repo.setAdminChecked(id, true);
+            AuditLogger.log(request, "UPDATE", "CONSULTATION", id, "admin_checked=true");
         }
 
         response.sendRedirect(request.getContextPath() + "/admin/consult/list");

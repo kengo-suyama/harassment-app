@@ -40,6 +40,7 @@ public class AdminConsultDetailServlet extends HttpServlet {
 
         if (c != null) {
             repo.markChatRead(c.getId(), "ADMIN");
+            AuditLogger.log(request, "VIEW", "CONSULTATION", c.getId(), "admin_detail");
         }
         request.setAttribute("consultation", c);
         request.getRequestDispatcher("/admin/consult/detail.jsp").forward(request, response);

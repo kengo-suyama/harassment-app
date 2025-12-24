@@ -25,6 +25,9 @@ public class MasterConsultDetailServlet extends HttpServlet {
         try { id = Integer.parseInt(request.getParameter("id")); } catch (Exception ignored) {}
 
         Consultation c = repo.findById(id);
+        if (c != null) {
+            AuditLogger.log(request, "VIEW", "CONSULTATION", c.getId(), "master_detail");
+        }
         request.setAttribute("consultation", c);
 
         request.getRequestDispatcher("/master/detail.jsp").forward(request, response);

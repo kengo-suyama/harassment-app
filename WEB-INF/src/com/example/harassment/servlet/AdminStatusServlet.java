@@ -24,6 +24,7 @@ public class AdminStatusServlet extends HttpServlet {
         String status = request.getParameter("status"); // UNCONFIRMED/CONFIRMED/REVIEWING/IN_PROGRESS/DONE
 
         repo.setStatus(id, status);
+        AuditLogger.log(request, "UPDATE", "CONSULTATION", id, "status=" + status);
 
         response.sendRedirect(request.getContextPath() + "/admin/consult/detail?id=" + id);
     }

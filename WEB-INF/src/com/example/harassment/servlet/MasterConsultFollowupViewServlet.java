@@ -38,6 +38,7 @@ public class MasterConsultFollowupViewServlet extends HttpServlet {
             return;
         }
 
+        AuditLogger.log(request, "VIEW", "CONSULTATION", c.getId(), "master_followup_view");
         request.setAttribute("consultation", c);
         request.getRequestDispatcher("/master/consult_followup_view.jsp")
                .forward(request, response);

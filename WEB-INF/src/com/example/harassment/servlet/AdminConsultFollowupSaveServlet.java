@@ -28,6 +28,7 @@ public class AdminConsultFollowupSaveServlet extends HttpServlet {
         String text = request.getParameter("followUpText");
 
         repo.saveFollowup(id, mode, text);
+        AuditLogger.log(request, "UPDATE", "CONSULTATION", id, "followup_" + mode);
 
         response.sendRedirect(request.getContextPath() + "/admin/consult/detail?id=" + id);
     }

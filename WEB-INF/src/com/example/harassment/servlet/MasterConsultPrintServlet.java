@@ -25,6 +25,9 @@ public class MasterConsultPrintServlet extends HttpServlet {
         try { id = Integer.parseInt(request.getParameter("id")); } catch (Exception ignored) {}
 
         Consultation c = repo.findById(id);
+        if (c != null) {
+            AuditLogger.log(request, "EXPORT", "CONSULTATION", c.getId(), "master_print");
+        }
         request.setAttribute("consultation", c);
 
         request.getRequestDispatcher("/master/print.jsp").forward(request, response);

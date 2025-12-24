@@ -47,13 +47,16 @@ public class MasterReportServlet extends HttpServlet {
 
         if ("csv".equalsIgnoreCase(format)) {
             if ("month".equalsIgnoreCase(scope)) {
+                AuditLogger.log(request, "EXPORT", "REPORT", null, "month=" + year + "-" + month);
                 writeCsv(response, year, month, monthResult);
             } else {
+                AuditLogger.log(request, "EXPORT", "REPORT", null, "year=" + year);
                 writeCsv(response, year, null, yearResult);
             }
             return;
         }
 
+        AuditLogger.log(request, "VIEW", "REPORT", null, "year=" + year + ",month=" + month);
         request.setAttribute("year", year);
         request.setAttribute("month", month);
         request.setAttribute("yearResult", yearResult);

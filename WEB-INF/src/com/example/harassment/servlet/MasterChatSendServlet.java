@@ -30,6 +30,7 @@ public class MasterChatSendServlet extends HttpServlet {
 
         if (text != null && !text.trim().isEmpty()) {
             repository.addChat(id, "MASTER", text.trim());
+            AuditLogger.log(request, "UPDATE", "CONSULTATION", id, "chat_send");
         }
         response.sendRedirect(request.getContextPath() + "/master/consult/followup/view?id=" + id);
     }

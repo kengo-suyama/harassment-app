@@ -25,6 +25,7 @@ public class AdminChatSendServlet extends HttpServlet {
         try { id = Integer.parseInt(request.getParameter("id")); } catch (Exception ignored) {}
 
         repo.appendChat(id, "ADMIN", request.getParameter("message"));
+        AuditLogger.log(request, "UPDATE", "CONSULTATION", id, "chat_send");
 
         response.sendRedirect(request.getContextPath() + "/admin/consult/detail?id=" + id);
     }

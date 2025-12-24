@@ -30,6 +30,7 @@ public class AdminStatusUpdateServlet extends HttpServlet {
         String status = request.getParameter("status");
 
         repository.updateStatus(id, status);
+        AuditLogger.log(request, "UPDATE", "CONSULTATION", id, "status=" + status);
 
         response.sendRedirect(request.getContextPath() + "/admin/consult/detail?id=" + id);
     }

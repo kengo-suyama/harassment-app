@@ -25,6 +25,9 @@ public class AdminFollowupEditServlet extends HttpServlet {
         try { id = Integer.parseInt(request.getParameter("id")); } catch (Exception ignored) {}
 
         Consultation c = repo.findById(id);
+        if (c != null) {
+            AuditLogger.log(request, "VIEW", "CONSULTATION", c.getId(), "admin_followup_edit");
+        }
         request.setAttribute("consultation", c);
 
         request.getRequestDispatcher("/admin/followup_edit.jsp").forward(request, response);
