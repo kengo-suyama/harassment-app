@@ -325,7 +325,7 @@ public class JdbcConsultationRepository implements ConsultationRepository {
     }
 
     @Override
-    public void addFollowUp(int id, String actorRole, String category, String text) {
+    public void addFollowUp(int id, String actorRole, String category, String text, LocalDateTime at) {
         String t = safe(text);
         if (t.isEmpty()) return;
 
@@ -337,7 +337,8 @@ public class JdbcConsultationRepository implements ConsultationRepository {
             ps.setString(2, normRole(actorRole));
             ps.setString(3, emptyToNull(category));
             ps.setString(4, t);
-            ps.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+            LocalDateTime dt = (at != null) ? at : LocalDateTime.now();
+            ps.setTimestamp(5, Timestamp.valueOf(dt));
             ps.executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException(e);

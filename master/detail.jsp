@@ -1,5 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.example.harassment.model.Consultation" %>
+<%@ page import="com.example.harassment.model.FollowUpRecord" %>
+<%@ page import="java.util.List" %>
 <%
   Consultation c = (Consultation) request.getAttribute("consultation");
 %>
@@ -61,6 +63,37 @@
       <hr>
       <div><strong>管理者の確定内容：</strong></div>
       <pre class="mb-0"><%= c.getFollowUpAction()!=null?c.getFollowUpAction():"" %></pre>
+
+      <hr>
+      <div><strong>対応履歴（最大5件）</strong></div>
+      <%
+        List<FollowUpRecord> followups = c.getFollowUpHistory();
+      %>
+      <div class="list-group mt-2">
+        <%
+          if (followups == null || followups.isEmpty()) {
+        %>
+          <div class="text-muted small">まだ履歴はありません。</div>
+        <%
+          } else {
+            int idx = 1;
+            for (FollowUpRecord r : followups) {
+        %>
+          <div class="list-group-item">
+            <div class="small text-muted">
+              第<%= idx %>回 /
+              <%= r.getAt() != null ? r.getAt().toString().replace('T', ' ') : "" %>
+              / <%= r.getByRoleLabel() %>
+              / <%= r.getCategoryLabel() %>
+            </div>
+            <pre class="mb-0"><%= r.getText() %></pre>
+          </div>
+        <%
+              idx++;
+            }
+          }
+        %>
+      </div>
 
       <hr>
       <div><strong>相談者アンケート：</strong></div>

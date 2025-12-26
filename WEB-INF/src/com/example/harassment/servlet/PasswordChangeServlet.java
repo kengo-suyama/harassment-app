@@ -55,6 +55,14 @@ public class PasswordChangeServlet extends HttpServlet {
         String newPassword     = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
 
+        String pwError = validateNewPassword(newPassword);
+        if (pwError != null) {
+            request.setAttribute("role", role);
+            request.setAttribute("error", pwError);
+            request.getRequestDispatcher("/password_change.jsp").forward(request, response);
+            return;
+        }
+
         if (newPassword == null || !newPassword.equals(confirmPassword)) {
             request.setAttribute("role", role);
             request.setAttribute("error", "新しいパスワードと確認用パスワードが一致しません。");
@@ -79,5 +87,21 @@ public class PasswordChangeServlet extends HttpServlet {
         request.setAttribute("role", role);
         request.setAttribute("message", "パスワードを変更しました。");
         request.getRequestDispatcher("/password_change.jsp").forward(request, response);
+    }
+
+    private String validateNewPassword(String password) {
+        if (password == null || password.trim().isEmpty()) {
+            return "新しいパスワードを入力してください。";
+        }
+        String p = password.trim();
+        if (p.length() < 8 || p.length() > 64) {
+            return "パスワードは8〜64文字で入力してください。";
+        }
+        boolean hasLetter = p.matches(".*[A-Za-z].*");
+        boolean hasDigit = p.matches(".*[0-9].*");
+        if (!hasLetter || !hasDigit) {
+            return "パスワードは英字と数字の両方を含めてください。";
+        }
+        return null;
     }
 }

@@ -36,17 +36,18 @@
                     <form method="post">
                         <div class="mb-3">
                             <label class="form-label">現在のパスワード</label>
-                            <input type="password" name="currentPassword" class="form-control" required>
+                            <input type="password" name="currentPassword" class="form-control" autocomplete="current-password" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">新しいパスワード</label>
-                            <input type="password" name="newPassword" class="form-control" required>
+                            <input type="password" name="newPassword" class="form-control" autocomplete="new-password" required>
+                            <div class="form-text">英字と数字を含む8〜64文字</div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">新しいパスワード（確認用）</label>
-                            <input type="password" name="confirmPassword" class="form-control" required>
+                            <input type="password" name="confirmPassword" class="form-control" autocomplete="new-password" required>
                         </div>
 
                         <div class="d-grid gap-2">

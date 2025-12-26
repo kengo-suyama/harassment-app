@@ -25,11 +25,18 @@
         }
       %>
 
-      <form method="post" action="<%= request.getContextPath() %>/master/login">
+      <form id="login-form" method="post" action="<%= request.getContextPath() %>/master/login" autocomplete="off">
         <label class="form-label">メールアドレス</label>
-        <input class="form-control mb-3" type="email" name="email" placeholder="master@local.test" required>
+        <input class="form-control mb-3"
+               type="email"
+               name="email"
+               placeholder="master@local.test"
+               autocomplete="off"
+               autocapitalize="off"
+               spellcheck="false"
+               required>
         <label class="form-label">パスワード</label>
-        <input class="form-control mb-3" type="password" name="password" required>
+        <input class="form-control mb-3" type="password" name="password" autocomplete="new-password" required>
         <button class="btn btn-secondary w-100" type="submit">ログイン</button>
       </form>
 
@@ -40,5 +47,11 @@
     </div>
   </div>
 </div>
+  <script>
+    window.addEventListener("pageshow", function () {
+      var form = document.getElementById("login-form");
+      if (form) form.reset();
+    });
+  </script>
 </body>
 </html>

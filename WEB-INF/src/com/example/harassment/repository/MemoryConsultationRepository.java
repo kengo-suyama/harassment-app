@@ -2,6 +2,7 @@ package com.example.harassment.repository;
 
 import com.example.harassment.model.ChatMessage;
 import com.example.harassment.model.Consultation;
+import com.example.harassment.model.FollowUpRecord;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -184,20 +185,21 @@ public class MemoryConsultationRepository {
      * actorRole: "ADMIN" など
      * category : "1st", "2nd", "産業医" 等（自由）
      */
-    public synchronized void addFollowUp(int id, String actorRole, String category, String text) {
+    public synchronized void addFollowUp(int id, String actorRole, String category, String text, LocalDateTime at) {
         Consultation c = store.get(id);
         if (c == null) return;
 
         String t = safe(text);
         if (t.isEmpty()) return;
 
-        String header = "【" + normRole(actorRole) + " / " + safe(category) + " / "
-                + LocalDateTime.now().toString().replace('T', ' ') + "】\n";
+        if (c.getFollowUpHistory().size() >= 5) {
+            return;
+        }
 
-        String current = c.getFollowUpDraft();
-        if (current == null) current = "";
-
-        c.setFollowUpDraft(current + (current.isEmpty() ? "" : "\n\n") + header + t);
+        LocalDateTime dt = (at != null) ? at : LocalDateTime.now();
+        String role = normRole(actorRole);
+        String cat = safe(category);
+        c.getFollowUpHistory().add(new FollowUpRecord(dt, role, cat, t));
 
         if (!"DONE".equals(c.getStatus())) {
             c.setStatus("IN_PROGRESS");

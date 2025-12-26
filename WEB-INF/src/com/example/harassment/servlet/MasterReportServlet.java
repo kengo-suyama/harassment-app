@@ -170,24 +170,51 @@ public class MasterReportServlet extends HttpServlet {
 
         try (PrintWriter out = response.getWriter()) {
             out.print('\uFEFF');
+            out.println("sep=,");
             if (month == null) {
-                out.println("year,total_count,avg_rating");
-                out.println(year + "," + result.totalCount + "," + String.format(Locale.US, "%.2f", result.avgRating));
+                out.println(csvRow("レポート種別", "年間"));
+                out.println(csvRow("対象年", String.valueOf(year)));
             } else {
-                out.println("year,month,total_count,avg_rating");
-                out.println(year + "," + month + "," + result.totalCount + "," + String.format(Locale.US, "%.2f", result.avgRating));
+                out.println(csvRow("レポート種別", "月間"));
+                out.println(csvRow("対象年", String.valueOf(year)));
+                out.println(csvRow("対象月", String.valueOf(month)));
             }
+            out.println(csvRow("総件数", String.valueOf(result.totalCount)));
+            out.println(csvRow("平均評価", String.format(Locale.US, "%.2f", result.avgRating)));
             out.println();
-            out.println("category,count");
+            out.println(csvRow("カテゴリ", "件数"));
             for (String c : CATEGORY_ORDER) {
-                out.println(c + "," + result.categoryCounts.getOrDefault(c, 0));
+                out.println(csvRow(c, String.valueOf(result.categoryCounts.getOrDefault(c, 0))));
             }
             out.println();
-            out.println("id,category,rating");
+            out.println(csvRow("ID", "カテゴリ", "評価"));
             for (ReportRow row : result.rows) {
-                out.println(row.id + "," + row.category + "," + (row.rating > 0 ? row.rating : ""));
+                out.println(csvRow(
+                        String.valueOf(row.id),
+                        row.category,
+                        row.rating > 0 ? String.valueOf(row.rating) : ""
+                ));
             }
         }
+    }
+
+    private String csvRow(String... cells) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < cells.length; i++) {
+            if (i > 0) sb.append(',');
+            sb.append(csvCell(cells[i]));
+        }
+        return sb.toString();
+    }
+
+    private String csvCell(String value) {
+        if (value == null) return "";
+        String v = value;
+        boolean needQuote = v.contains(",") || v.contains("\"") || v.contains("\n") || v.contains("\r");
+        if (v.contains("\"")) {
+            v = v.replace("\"", "\"\"");
+        }
+        return needQuote ? ("\"" + v + "\"") : v;
     }
 
     private String safe(String s) {

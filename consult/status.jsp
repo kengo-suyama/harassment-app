@@ -34,10 +34,17 @@
             送信完了時に表示された照合キーを入力してください。
           </p>
 
-          <form method="post" action="<%= request.getContextPath() %>/consult/status">
+          <form id="status-form" method="post" action="<%= request.getContextPath() %>/consult/status" autocomplete="off">
             <div class="mb-3">
               <label class="form-label">照合キー</label>
-              <input type="text" name="token" class="form-control" required placeholder="例：1B2C3D4EF5G6H7I">
+              <input type="text"
+                     name="token"
+                     class="form-control"
+                     required
+                     autocomplete="off"
+                     autocapitalize="off"
+                     spellcheck="false"
+                     placeholder="例：1B2C3D4EF5G6H7I">
             </div>
 
             <button class="btn btn-primary" type="submit">確認する</button>
@@ -50,5 +57,11 @@
   </div>
 </div>
 
+  <script>
+    window.addEventListener("pageshow", function () {
+      var form = document.getElementById("status-form");
+      if (form) form.reset();
+    });
+  </script>
 </body>
 </html>

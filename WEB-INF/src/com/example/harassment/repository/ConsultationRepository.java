@@ -2,6 +2,7 @@ package com.example.harassment.repository;
 
 import com.example.harassment.model.Consultation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ConsultationRepository {
@@ -15,7 +16,10 @@ public interface ConsultationRepository {
     void setStatus(int id, String status);
     void updateStatus(int id, String status);
     void saveFollowup(int id, String mode, String text);
-    void addFollowUp(int id, String actorRole, String category, String text);
+    void addFollowUp(int id, String actorRole, String category, String text, LocalDateTime at);
+    default void addFollowUp(int id, String actorRole, String category, String text) {
+        addFollowUp(id, actorRole, category, text, null);
+    }
     void appendChat(int id, String senderRole, String message);
     void addChat(int id, String senderRole, String message);
     void markChatRead(int id, String role);

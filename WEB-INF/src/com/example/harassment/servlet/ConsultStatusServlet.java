@@ -24,6 +24,9 @@ public class ConsultStatusServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
         String pathInfo = request.getPathInfo();
         if (pathInfo == null || "/".equals(pathInfo) || pathInfo.trim().isEmpty()) {
             request.getRequestDispatcher("/consult/status.jsp").forward(request, response);

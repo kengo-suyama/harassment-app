@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.example.harassment.model.Consultation" %>
 <%@ page import="com.example.harassment.model.ChatMessage" %>
+<%@ page import="com.example.harassment.model.FollowUpRecord" %>
 <%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html lang="ja">
@@ -29,6 +30,16 @@
   <%
     } else {
       List<ChatMessage> msgs = c.getChatMessages();
+      String followupError = (String) session.getAttribute("followupError");
+      if (followupError != null) {
+        session.removeAttribute("followupError");
+      }
+      List<FollowUpRecord> followups = c.getFollowUpHistory();
+      int followupCount = (followups != null) ? followups.size() : 0;
+      int followupRemain = 5 - followupCount;
+      boolean followupLimit = followupRemain <= 0;
+      int nextIndex = followupCount + 1;
+      if (nextIndex > 5) nextIndex = 5;
   %>
     <div class="card shadow-sm mb-3">
       <div class="card-body">
@@ -92,8 +103,9 @@
               <%
                 if (msgs == null || msgs.isEmpty()) {
               %>
-                <div class="p-3 text-center bg-light border rounded text-muted small">
-                  まだメッセージはありません
+                <div class="alert alert-secondary text-center mb-0">
+                  <div class="fw-semibold">まだメッセージは届いていません</div>
+                  <div class="small">新しい連絡が届くとここに表示されます</div>
                 </div>
               <%
                 } else {
@@ -134,6 +146,82 @@
             <div class="small text-muted">確定内容（全権管理者画面に反映）</div>
             <pre class="mb-0"><%= c.getFollowUpAction()!=null?c.getFollowUpAction():"" %></pre>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h2 class="h6 mb-3">対応履歴（最大5件）</h2>
+
+        <% if (followupError != null && !followupError.isEmpty()) { %>
+          <div class="alert alert-danger"><%= followupError %></div>
+        <% } %>
+
+        <form method="post" action="<%= request.getContextPath() %>/admin/consult/followup/add" class="mb-3">
+          <input type="hidden" name="id" value="<%= c.getId() %>">
+          <div class="row g-2">
+            <div class="col-md-3">
+              <label class="form-label">回数</label>
+              <select class="form-select" name="category" <%= followupLimit ? "disabled" : "" %>>
+                <option value="ROUND_1" <%= (nextIndex == 1) ? "selected" : "" %>>第1回</option>
+                <option value="ROUND_2" <%= (nextIndex == 2) ? "selected" : "" %>>第2回</option>
+                <option value="ROUND_3" <%= (nextIndex == 3) ? "selected" : "" %>>第3回</option>
+                <option value="ROUND_4" <%= (nextIndex == 4) ? "selected" : "" %>>第4回</option>
+                <option value="ROUND_5" <%= (nextIndex == 5) ? "selected" : "" %>>第5回</option>
+                <option value="OCC_HEALTH">産業医/専門家連携</option>
+                <option value="NOTE">メモ</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">日時</label>
+              <input type="datetime-local"
+                     name="followUpAt"
+                     class="form-control"
+                     <%= followupLimit ? "disabled" : "" %>>
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">内容</label>
+              <textarea name="text"
+                        class="form-control"
+                        rows="2"
+                        <%= followupLimit ? "disabled" : "" %>
+                        placeholder="対応内容を記入してください"></textarea>
+            </div>
+          </div>
+          <div class="mt-2 d-flex align-items-center gap-2">
+            <button class="btn btn-outline-primary" type="submit" <%= followupLimit ? "disabled" : "" %>>履歴を追加</button>
+            <div class="text-muted small">残り <%= followupRemain > 0 ? followupRemain : 0 %> 件</div>
+          </div>
+          <% if (followupLimit) { %>
+            <div class="text-muted small mt-2">対応履歴は最大5件まで登録できます。</div>
+          <% } %>
+        </form>
+
+        <div class="list-group">
+          <%
+            if (followups == null || followups.isEmpty()) {
+          %>
+            <div class="text-muted small">まだ履歴はありません。</div>
+          <%
+            } else {
+              int idx = 1;
+              for (FollowUpRecord r : followups) {
+          %>
+            <div class="list-group-item">
+              <div class="small text-muted">
+                第<%= idx %>回 /
+                <%= r.getAt() != null ? r.getAt().toString().replace('T', ' ') : "" %>
+                / <%= r.getByRoleLabel() %>
+                / <%= r.getCategoryLabel() %>
+              </div>
+              <pre class="mb-0"><%= r.getText() %></pre>
+            </div>
+          <%
+                idx++;
+              }
+            }
+          %>
         </div>
       </div>
     </div>

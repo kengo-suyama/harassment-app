@@ -45,6 +45,13 @@ public class PasswordResetServlet extends HttpServlet {
             return;
         }
 
+        String pwError = validateNewPassword(newPassword);
+        if (pwError != null) {
+            request.setAttribute("error", pwError);
+            forward(role, request, response);
+            return;
+        }
+
         if (!newPassword.equals(confirmPassword)) {
             request.setAttribute("error", "新しいパスワードと確認用パスワードが一致しません。");
             forward(role, request, response);
@@ -60,6 +67,20 @@ public class PasswordResetServlet extends HttpServlet {
 
         request.setAttribute("message", "パスワードを変更しました。");
         forward(role, request, response);
+    }
+
+    private String validateNewPassword(String password) {
+        if (password == null) return "パスワードを入力してください。";
+        String p = password.trim();
+        if (p.length() < 8 || p.length() > 64) {
+            return "パスワードは8〜64文字で入力してください。";
+        }
+        boolean hasLetter = p.matches(".*[A-Za-z].*");
+        boolean hasDigit = p.matches(".*[0-9].*");
+        if (!hasLetter || !hasDigit) {
+            return "パスワードは英字と数字の両方を含めてください。";
+        }
+        return null;
     }
 
     private void forward(String role, HttpServletRequest request, HttpServletResponse response)

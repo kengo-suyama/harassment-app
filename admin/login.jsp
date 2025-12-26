@@ -2,9 +2,6 @@
 <%
     String ctx = request.getContextPath();
     String error = (String) request.getAttribute("errorMessage");
-    String user = request.getParameter("email");
-    if (user == null) user = request.getParameter("username");
-    if (user == null) user = "";
 %>
 <!DOCTYPE html>
 <html lang="ja">
@@ -38,14 +35,15 @@
             管理者用のログインページです。
           </p>
 
-          <form method="post" action="<%= ctx %>/admin/login">
+          <form id="login-form" method="post" action="<%= ctx %>/admin/login" autocomplete="off">
             <div class="mb-3">
               <label class="form-label">メールアドレス</label>
               <input type="text"
                      name="email"
                      class="form-control"
-                     autocomplete="username"
-                     value="<%= user %>"
+                     autocomplete="off"
+                     autocapitalize="off"
+                     spellcheck="false"
                      required>
             </div>
 
@@ -54,7 +52,7 @@
               <input type="password"
                      name="password"
                      class="form-control"
-                     autocomplete="current-password"
+                     autocomplete="new-password"
                      required>
             </div>
 
@@ -76,5 +74,11 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  window.addEventListener("pageshow", function () {
+    var form = document.getElementById("login-form");
+    if (form) form.reset();
+  });
+</script>
 </body>
 </html>

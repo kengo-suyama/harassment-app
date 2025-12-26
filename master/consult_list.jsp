@@ -28,6 +28,7 @@
                 (List<Consultation>) request.getAttribute("consultations");
     %>
 
+    <div class="table-responsive">
     <table class="table table-sm table-striped align-middle">
         <thead>
         <tr>
@@ -69,6 +70,7 @@
         %>
         </tbody>
     </table>
+    </div>
 
     <a href="<%= request.getContextPath() %>/" class="btn btn-outline-secondary btn-sm">
         トップへ戻る

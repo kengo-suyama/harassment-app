@@ -79,8 +79,9 @@
         <%
           if (msgs == null || msgs.isEmpty()) {
         %>
-          <div class="p-3 text-center bg-light border rounded text-muted small">
-            まだメッセージはありません
+          <div class="alert alert-secondary text-center mb-0">
+            <div class="fw-semibold">まだメッセージは届いていません</div>
+            <div class="small">新しい連絡が届くとここに表示されます</div>
           </div>
         <%
           } else {
