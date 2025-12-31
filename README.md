@@ -110,7 +110,7 @@ PWA 化 / Android（TWA）化
 
 This software is licensed under AGPL-3.0.
 Commercial use requires attribution and compliance with license terms.
-開発者
+Kengo Suyama.
 
 This project is developed and maintained by Kengo Suyama.
 Designed for real-world harassment consultation operations.
